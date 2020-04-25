@@ -16,7 +16,7 @@ from pwn import context, disasm, unhex
 
 
 context.arch = 'i386'
-context.os   = 'os'
+context.os = 'linux'
 
 
 def shellcode_to_asm(shellcode, raw_hex=True):
