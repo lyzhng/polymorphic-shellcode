@@ -3,6 +3,8 @@ The transpiler module is responsible for converting shellcode into x86 asm and
 vice versa.
 """
 
+#pylint: disable=wrong-import-position
+
 import os
 import sys
 
