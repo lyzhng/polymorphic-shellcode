@@ -12,7 +12,7 @@ if MODULE_DIR_NAME not in sys.path:
     sys.path.insert(0, MODULE_DIR_NAME)
 
 
-from pwn import context, disasm, unhex
+from pwn import asm, context, disasm, unhex
 
 
 context.arch = 'i386'
@@ -24,3 +24,8 @@ def shellcode_to_asm(shellcode, raw_hex=True):
     if raw_hex:
         return disasm(shellcode, byte=False, offset=False).split('\n')
     return disasm(unhex(shellcode), byte=False, offset=False).split('\n')
+
+
+def asm_to_shellcode(asm_code):
+    'Convert x86 asm code into shellcode.'
+    return asm(asm_code)
