@@ -78,6 +78,24 @@ class Compiler():
         return chosen_substitution
 
 
+    def apply_substitution(self, parse_data):
+        """
+        Rewrite the given program by substituting each instruction with valid substitutions.
+        """
+        new_code = []
+
+        for parse_annotation in parse_data:
+            operator, operands = parse_annotation[0], parse_annotation[1:]
+            if self.check_coverage([parse_annotation]):
+                new_code.append(self.get_substitution(operator, operands))
+            else:
+                operator = operator.name.lower()
+                operands = ', '.join([operand.value for operand in operands])
+                new_code.append(f'{operator} {operands}')
+
+        return '\n'.join(new_code)
+
+
 def parse_substitution_file(filename):
     """
     Parse the valid substitutions in the file given so that it can be used by
