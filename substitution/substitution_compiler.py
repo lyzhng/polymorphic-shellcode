@@ -99,7 +99,7 @@ class Compiler():
 def parse_substitution_file(filename):
     """
     Parse the valid substitutions in the file given so that it can be used by
-    self.get_substitution().
+    get_substitution() method of Compiler.
     """
     with open(filename) as file_handler:
         valid_substitutions = file_handler.read().split('----------')
