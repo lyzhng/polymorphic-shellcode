@@ -55,7 +55,7 @@ class Compiler():
 
             if operator not in self.signatures or operands_key not in self.signatures[operator]:
                 incomplete_coverage = False
-                print(f'Missing signature for {operator} {operands_key}')
+                print(f'WARNING: Missing signature for {operator} {operands_key}!')
 
         return incomplete_coverage
 
