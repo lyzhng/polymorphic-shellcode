@@ -88,7 +88,7 @@ def parse_substitution_file(filename):
         for index, substitution in enumerate(valid_substitutions):
             substitution_lines = substitution.split('\n')
             header = substitution_lines[0]
-            substitution = '\n'.join(substitution_lines[1:])
+            substitution = '\n'.join(substitution_lines[1:]).strip()
 
             valid_substitutions[index] = [header, substitution]
 
