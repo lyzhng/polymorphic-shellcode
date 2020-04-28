@@ -104,7 +104,7 @@ def parse_substitution_file(filename):
     with open(filename) as file_handler:
         valid_substitutions = file_handler.read().split('----------')
         for index, substitution in enumerate(valid_substitutions):
-            substitution_lines = substitution.split('\n')
+            substitution_lines = substitution.strip().split('\n')
             header = substitution_lines[0]
             substitution = '\n'.join(substitution_lines[1:]).strip()
 
