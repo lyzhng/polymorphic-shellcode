@@ -11,13 +11,17 @@ import argparse
 
 
 _EXECUTOR_TARGET: str = 'const unsigned char code[];'
-_DECRYPTOR_TARGET: str = 'const unsigned char encrypted_execve_sc[];'  
+_EXECUTOR_TEMPLATE_PATH = 'templates/executor_template.c'
+_DECRYPTOR_TARGET: str = 'const unsigned char encrypted_execve_sc[];' 
+_DECRYPTOR_TEMPLATE_PATH = 'templates/decryptor_template.c' 
+_OUTPUT_PATH = 'output.c'
+_OUTPUT_EXE_PATH = _OUTPUT_PATH[:_OUTPUT_PATH.index('.')]
 _NL: str = '\n'  
 
 
 def fill_template(sc: str) -> str:
 	builder: List[str] = []
-	file_to_read: str = 'templates/decryptor_template.c' if args.decrypt else 'templates/executor_template.c'
+	file_to_read: str = _DECRYPTOR_TEMPLATE_PATH if args.decrypt else _EXECUTOR_TEMPLATE_PATH
 	with open(file_to_read, 'r') as f:
 		for line in f:
 			line = line.lstrip()
@@ -31,13 +35,13 @@ def fill_template(sc: str) -> str:
 
 
 def write_file(builder: str) -> None:
-	with open('output.c', 'w') as f:
+	with open(_OUTPUT_PATH, 'w') as f:
 		f.write(builder)
 
 
 def execute_program() -> None:
-    os.system('gcc output.c -g -o output -lssl3 -lcrypto -fno-stack-protector -z execstack -m32')
-    os.system('./output')
+    os.system(f'gcc {_OUTPUT_PATH} -g -o {_OUTPUT_EXE_PATH} -lssl3 -lcrypto -fno-stack-protector -z execstack -m32')
+    os.system(f'./{_OUTPUT_EXE_PATH}')
 
 
 def args_exist() -> bool:
