@@ -2,6 +2,7 @@
 The utils module provide some functions for syntactic sugar.
 """
 
+
 class RegexSwitch:
 
     """
