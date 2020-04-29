@@ -16,7 +16,7 @@ if MODULE_DIR_NAME not in sys.path:
 
 
 import re
-from typing import NamedTuple
+from typing import List, NamedTuple, Union
 
 
 from substitution_enums import Operator, Operand
@@ -39,7 +39,7 @@ class OperandNode(NamedTuple):
         return f'Operand of type {self.kind} and of value {self.value}'
 
 
-def parse(asm_code):
+def parse(asm_code: List[str]) -> List[List[Union[Operator, Operand]]]:
     'Annotate the asm code to be used by the compiler.'
     parse_data = []
     for line in asm_code:
