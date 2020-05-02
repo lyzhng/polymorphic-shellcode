@@ -23,7 +23,7 @@ context.os = 'linux'
 
 def shellcode_to_asm(shellcode, byte=True, offset=True):
     'Convert shellcode into x86 asm code.'
-    return disasm(shellcode, byte, offset).split('\n')
+    return disasm(shellcode, byte=byte, offset=offset).split('\n')
 
 
 def asm_to_shellcode(asm_code):
