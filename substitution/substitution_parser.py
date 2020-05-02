@@ -102,3 +102,33 @@ def parse(asm_code: List[str]) -> List[List[Union[Operator, Operand]]]:
         parse_data.append(parse_annotation)
 
     return parse_data
+
+
+class AsmNode(NamedTuple):
+
+    'AsmNode stores the offset, size, and code of a line in the raw disassembly.'
+
+    offset: int
+    size: int
+    code: str
+
+    def __repr__(self):
+        return f'{code} is {size} bytes at {offset}.'
+
+
+def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
+    """
+    The first pass is responsible for parsing the memory address and instruction from the
+    raw disassembly.  The raw disassembly should be in the format of memory_offset: asm_code.
+    """
+    asm_code = []
+    
+    regex = re.compile(r' +(\d+): +(.+)')
+    for line in raw_disassembly:
+        match = regex.fullmatch(line)
+        if match is None:
+            raise ValueError('Invalid format!')
+        asm_node = AsmNode(int(match.group(0)), match.group(1))
+        asm_code.append(asm_node)
+
+    return asm_code
