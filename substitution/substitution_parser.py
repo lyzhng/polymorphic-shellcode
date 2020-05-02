@@ -72,36 +72,14 @@ class Annotation():
         return f'{self.operator} {operands} with {self.size} bytes at {self.memory_address}'
 
 
-def parse(asm_code: List[str]) -> List[List[Union[Operator, Operand]]]:
-    'Annotate the asm code to be used by the compiler.'
-    parse_data = []
-    for line in asm_code:
-        parse_annotation = []
-
-        components = line.strip().split(' ', 1)
-        for operator in Operator:
-            if components[0] == operator.name.lower():
-                parse_annotation.append(operator)
-                break
-
-        operands = [operand.strip('\t, ') for operand in components[1].split(',')]
-        for operand in operands:
-            with RegexSwitch(operand) as case:
-                if case(_CONST):
-                    operand_node = OperandNode(Operand.CONST, operand)
-                    parse_annotation.append(operand_node)
-                elif case(_MEM):
-                    operand_node = OperandNode(Operand.MEM, operand)
-                    parse_annotation.append(operand_node)
-                elif case(_REG):
-                    operand_node = OperandNode(Operand.REG, operand)
-                    parse_annotation.append(operand_node)
-                else:
-                    raise TypeError(f'{operand} is not of a type supported by the parser')
-
-        parse_data.append(parse_annotation)
-
-    return parse_data
+def parse(raw_disassembly: List[str]) -> List[Annotation]:
+    """
+    Annotate the asm code to be used by the compiler.  Takes raw disassembly as input
+    and outputs a list of Annotation.
+    """
+    asm_nodes = parse_first_pass(raw_disassembly)
+    annotations = parse_second_pass(asm_nodes)
+    return annotations
 
 
 class AsmNode(NamedTuple):
