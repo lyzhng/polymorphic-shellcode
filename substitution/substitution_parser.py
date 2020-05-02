@@ -119,16 +119,20 @@ class AsmNode(NamedTuple):
 def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
     """
     The first pass is responsible for parsing the memory address and instruction from the
-    raw disassembly.  The raw disassembly should be in the format of memory_offset: asm_code.
+    raw disassembly.  The raw disassembly should be in the format of
+    memory_offset: opcode asm_code.
     """
     asm_code = []
     
-    regex = re.compile(r' +(\d+): +(.+)')
+    regex = re.compile(r' +(\d+): +((?:[a-fA-F0-9]{2} )+[0-9a-fA-F]{2}) +(.+)')
     for line in raw_disassembly:
         match = regex.fullmatch(line)
-        if match is None:
-            raise ValueError('Invalid format!')
-        asm_node = AsmNode(int(match.group(0)), match.group(1))
+        
+        offset = int(match.group(1))
+        size = len(match.group(2).strip().split())
+        code = match.group(3)
+
+        asm_node = AsmNode(offset, size, code)
         asm_code.append(asm_node)
 
     return asm_code
