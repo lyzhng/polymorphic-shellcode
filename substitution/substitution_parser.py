@@ -59,8 +59,8 @@ class Annotation():
         self.operands.append(operand)
 
 
-    def set_memory_address(self, memory_address: str):
-        self.memory_address: str = memory_address
+    def set_memory_address(self, memory_address: int):
+        self.memory_address: int = memory_address
 
 
     def set_size(self, size: int):
