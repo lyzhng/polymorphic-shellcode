@@ -28,6 +28,17 @@ _MEM = re.compile(r'((BYTE PTR )|(WORD PTR )|(DWORD PTR ))?(\[.+\])', re.IGNOREC
 _REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl')
 
 
+class OperandNode(NamedTuple):
+
+    'OperandNode stores the kind and value of the operand.'
+
+    kind: str
+    value: str
+
+    def __repr__(self):
+        return f'Operand of type {self.kind} and of value {self.value}'
+
+
 class Annotation():
 
     'Annotation stores data needed for the compiler to do its work'
@@ -59,17 +70,6 @@ class Annotation():
     def __repr__(self):
         operands = ', '.join([operand.value for operand in self.operands])
         return f'{self.operator} {operands} with {self.size} bytes at {self.memory_address}'
-
-
-class OperandNode(NamedTuple):
-
-    'OperandNode stores the kind and value of the operand.'
-
-    kind: str
-    value: str
-
-    def __repr__(self):
-        return f'Operand of type {self.kind} and of value {self.value}'
 
 
 def parse(asm_code: List[str]) -> List[List[Union[Operator, Operand]]]:
