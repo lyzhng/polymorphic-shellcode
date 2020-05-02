@@ -113,7 +113,7 @@ class AsmNode(NamedTuple):
     code: str
 
     def __repr__(self):
-        return f'{code} is {size} bytes at {offset}.'
+        return f'{self.code} is {self.size} bytes at {self.offset}.'
 
 
 def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
