@@ -17,7 +17,7 @@ if MODULE_DIR_NAME not in sys.path:
 from pwn import asm, context, disasm, unhex
 
 
-context.arch = 'i386'
+context.arch = 'i686'
 context.os = 'linux'
 
 
