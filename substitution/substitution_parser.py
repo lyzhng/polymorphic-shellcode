@@ -16,7 +16,7 @@ if MODULE_DIR_NAME not in sys.path:
 
 
 import re
-from typing import List, NamedTuple, Union
+from typing import List, NamedTuple
 
 
 from substitution_enums import Operator, Operand
@@ -70,16 +70,6 @@ class Annotation():
     def __repr__(self):
         operands = ', '.join([operand.value for operand in self.operands])
         return f'{self.operator} {operands} with {self.size} bytes at {self.memory_address}'
-
-
-def parse(raw_disassembly: List[str]) -> List[Annotation]:
-    """
-    Annotate the asm code to be used by the compiler.  Takes raw disassembly as input
-    and outputs a list of Annotation.
-    """
-    asm_nodes = parse_first_pass(raw_disassembly)
-    annotations = parse_second_pass(asm_nodes)
-    return annotations
 
 
 class AsmNode(NamedTuple):
@@ -153,3 +143,13 @@ def parse_second_pass(asm_nodes: List[AsmNode]) -> List[Annotation]:
         asm_annotations.append(annotation)
 
     return asm_annotations
+
+
+def parse(raw_disassembly: List[str]) -> List[Annotation]:
+    """
+    Annotate the asm code to be used by the compiler.  Takes raw disassembly as input
+    and outputs a list of Annotation.
+    """
+    asm_nodes = parse_first_pass(raw_disassembly)
+    annotations = parse_second_pass(asm_nodes)
+    return annotations
