@@ -128,7 +128,7 @@ def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
     for line in raw_disassembly:
         match = regex.fullmatch(line)
         
-        offset = int(match.group(1))
+        offset = int(match.group(1), 16)
         size = len(match.group(2).strip().split())
         code = match.group(3)
 
