@@ -28,18 +28,37 @@ _MEM = re.compile(r'((BYTE PTR )|(WORD PTR )|(DWORD PTR ))?(\[.+\])', re.IGNOREC
 _REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl')
 
 
-class Annotation(NamedTuple):
+class Annotation():
 
     'Annotation stores data needed for the compiler to do its work'
 
-    operator: Operator
-    operands: List[OperandNode]
-    memory_address: str
-    size: int
+    def __init__(self):
+        self.operands: List[OperandNode] = []
+
+
+    def set_operator(self, operator: Operator):
+        self.operator: Operator = operator
+
+
+    def set_operands(self, operands: List[OperandNode]):
+        self.operands = operands
+
+
+    def add_operand(self, operand: OperandNode):
+        self.operands.append(operand)
+
+
+    def set_memory_address(self, memory_address: str):
+        self.memory_address: str = memory_address
+
+
+    def set_size(self, size: int):
+        self.size: int = size
+
 
     def __repr__(self):
         operands = ', '.join([operand.value for operand in self.operands])
-        return f'{self.operator} {operands} with {self.size} bytes at {self.memory_size}'
+        return f'{self.operator} {operands} with {self.size} bytes at {self.memory_address}'
 
 
 class OperandNode(NamedTuple):
