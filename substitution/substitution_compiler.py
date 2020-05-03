@@ -120,7 +120,7 @@ class Compiler():
         return complete_coverage
 
 
-    def get_substitution(self, annotation: Annotation) -> List[Union[int, str]]:
+    def get_template(self, annotation: Annotation) -> CodeTemplate:
         """
         Retrieve a valid substitution for the instruction as described by the given operator
         and operands.
@@ -130,7 +130,10 @@ class Compiler():
         if filename not in self.substitutions:
             self.substitutions[filename] = parse_substitution_file(filename)
 
-        size, header, chosen_substitution = random.choice(self.substitutions[filename])
+        self.substitutions[filename].append(self.get_default_template(annotation))
+        template = random.choice(self.substitutions[filename])
+        self.substitutions[filename].pop()
+        return template
 
         for template, operand in zip(header.split(), annotation.operands):
             chosen_substitution = chosen_substitution.replace(template, operand.value)
