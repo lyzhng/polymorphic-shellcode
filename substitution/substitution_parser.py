@@ -4,7 +4,7 @@ which would be used by the compiler to rewrite the program using different
 instructions.
 """
 
-#pylint: disable=wrong-import-position
+# pylint: disable=wrong-import-position
 
 import os
 import sys
@@ -16,22 +16,21 @@ if MODULE_DIR_NAME not in sys.path:
 
 
 import re
-import string
-from typing import NamedTuple
+from typing import List, NamedTuple
 
 
 from substitution_enums import Operator, Operand
+from substitution_utils import RegexSwitch
 
 
-CONST_PATTERN = re.compile('0x[0-9a-f]+')
-LABEL_PATTERN = re.compile(f'[{string.ascii_letters + string.digits}_]+')
-MEM_PATTERN = re.compile(r'\[.+\]')
-REGISTER_PATTERN = re.compile('eax|ebx|ecx|edx|esi|edi|esp|ebp|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl')
+_CONST = re.compile(r'0x[0-9a-zA-Z]+')
+_MEM = re.compile(r'((BYTE PTR )|(WORD PTR )|(DWORD PTR ))?(\[.+\])', re.IGNORECASE)
+_REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl')
 
 
 class OperandNode(NamedTuple):
 
-    'OperandNode stores the kind and value of an operand.'
+    'OperandNode stores the kind and value of the operand.'
 
     kind: str
     value: str
@@ -40,32 +39,117 @@ class OperandNode(NamedTuple):
         return f'Operand of type {self.kind} and of value {self.value}'
 
 
-def parse(asm_code):
-    'Annotate the asm code to be used by the compiler.'
-    result = []
+class Annotation():
 
-    for line in asm_code:
-        print(line)
-        components = list(map(lambda x: x.strip(' \t,'), line.split()))
+    'Annotation stores data needed for the compiler to do its work'
 
-        parsed_components = []
+    def __init__(self):
+        self.operands: List[OperandNode] = []
+
+
+    def set_operator(self, operator: Operator):
+        self.operator: Operator = operator
+
+
+    def set_operands(self, operands: List[OperandNode]):
+        self.operands = operands
+
+
+    def add_operand(self, operand: OperandNode):
+        self.operands.append(operand)
+
+
+    def set_memory_address(self, memory_address: int):
+        self.memory_address: int = memory_address
+
+
+    def set_size(self, size: int):
+        self.size: int = size
+
+
+    def __repr__(self):
+        operands = ', '.join([operand.value for operand in self.operands])
+        return f'{self.operator} {operands} with {self.size} bytes at {self.memory_address}'
+
+
+class AsmNode(NamedTuple):
+
+    'AsmNode stores the offset, size, and code of a line in the raw disassembly.'
+
+    offset: int
+    size: int
+    code: str
+
+    def __repr__(self):
+        return f'{self.code} is {self.size} bytes at {self.offset}.'
+
+
+def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
+    """
+    The first pass is responsible for parsing the memory address and instruction from the
+    raw disassembly.  The raw disassembly should be in the format of
+    memory_offset: opcode asm_code.
+    """
+    asm_code = []
+    
+    regex = re.compile(r' +(\d+): +((?:[a-fA-F0-9]{2} )+[0-9a-fA-F]{2}) +(.+)')
+    for line in raw_disassembly:
+        match = regex.fullmatch(line)
+        
+        offset = int(match.group(1), 16)
+        size = len(match.group(2).strip().split())
+        code = match.group(3)
+
+        asm_node = AsmNode(offset, size, code)
+        asm_code.append(asm_node)
+
+    return asm_code
+
+
+def parse_second_pass(asm_nodes: List[AsmNode]) -> List[Annotation]:
+    """
+    The second pass is responsible for annotating each line of asm code to be used by the
+    compiler for rewriting the program.
+    """
+    asm_annotations = []
+
+    for index, asm_node in enumerate(asm_nodes):
+        annotation = Annotation()
+        components = asm_node.code.strip().split(' ', 1)
+
         for operator in Operator:
             if components[0] == operator.name.lower():
-                parsed_components.append(operator)
+                annotation.set_operator(operator)
+                break
 
-                for operand in components[1:]:
-                    if CONST_PATTERN.match(operand):
-                        operand_node = OperandNode(Operand.CONST, operand)
-                        parsed_components.append(operand_node)
-                    elif MEM_PATTERN.match(operand):
-                        operand_node = OperandNode(Operand.MEM, operand)
-                        parsed_components.append(operand_node)
-                    elif REGISTER_PATTERN.match(operand):
-                        operand_node = OperandNode(Operand.REG, operand)
-                        parsed_components.append(operand_node)
-                    elif LABEL_PATTERN.match(operand):
-                        operand_node = OperandNode(Operand.LABEL, operand)
-                        parsed_components.append(operand_node)
+        operands = [operand.strip('\t, ') for operand in components[1].split(',')]
+        for operand in operands:
+            with RegexSwitch(operand) as case:
+                if case(_CONST):
+                    operand_node = OperandNode(Operand.CONST, operand)
+                    annotation.add_operand(operand_node)
+                elif case(_MEM):
+                    operand_node = OperandNode(Operand.MEM, operand)
+                    annotation.add_operand(operand_node)
+                elif case(_REG):
+                    operand_node = OperandNode(Operand.REG, operand)
+                    annotation.add_operand(operand_node)
+                else:
+                    raise TypeError(f'{operand} is not of a type supported by the parser')
 
-                result.append(parsed_components)
-    return result
+        annotation.set_memory_address(asm_node.offset)
+        annotation.set_size(asm_node.size)
+
+        asm_annotations.append(annotation)
+
+    return asm_annotations
+
+
+def parse(raw_disassembly: List[str]) -> List[Annotation]:
+    """
+    Annotate the asm code to be used by the compiler.  Takes raw disassembly as input
+    and outputs a list of Annotation.
+    """
+    asm_nodes = parse_first_pass(raw_disassembly)
+    annotations = parse_second_pass(asm_nodes)
+    return annotations

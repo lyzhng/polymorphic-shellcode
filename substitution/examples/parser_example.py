@@ -44,7 +44,11 @@ def main():
             asm_code = eval(user_input)
 
         print('\nRunning the parser on:')
+        for line in asm_code:
+            print(line)
+
         parse_data = parser.parse(asm_code)
+
         print('')
         print('The output is...')
         for parse_annotation in parse_data:

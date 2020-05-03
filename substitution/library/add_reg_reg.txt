@@ -1,0 +1,12 @@
+$REG1 $REG2
+mov eax, $REG1
+add eax, $REG2
+----------
+$REG1 $REG2
+mov eax, 0
+sub eax, $REG2
+sub $REG1, $REG2
+----------
+$REG1 $REG2
+neg $REG2
+sub $REG1, $REG2

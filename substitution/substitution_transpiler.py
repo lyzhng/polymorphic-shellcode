@@ -17,15 +17,13 @@ if MODULE_DIR_NAME not in sys.path:
 from pwn import asm, context, disasm, unhex
 
 
-context.arch = 'i386'
+context.arch = 'i686'
 context.os = 'linux'
 
 
-def shellcode_to_asm(shellcode, raw_hex=True):
-    'Convert shellcode into x86 asm code.  If raw_hex is False, need to unhex it first.'
-    if raw_hex:
-        return disasm(shellcode, byte=False, offset=False).split('\n')
-    return disasm(unhex(shellcode), byte=False, offset=False).split('\n')
+def shellcode_to_asm(shellcode, byte=True, offset=True):
+    'Convert shellcode into x86 asm code.'
+    return disasm(shellcode, byte=byte, offset=offset).split('\n')
 
 
 def asm_to_shellcode(asm_code):
