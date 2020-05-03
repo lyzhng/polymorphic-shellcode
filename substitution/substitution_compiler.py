@@ -16,28 +16,64 @@ if MODULE_DIR_NAME not in sys.path:
 
 import random
 import re
-from typing import Dict, List, NamedTuple, Union
+from typing import Dict, List
 
 
 from substitution_parser import Annotation, OperandNode
+from substitution_enums import Operator
 
 
-class SubstitutedCode(NamedTuple):
+class CodeTemplate():
 
-    'SubstitutedCode represents the code that was substituted in.'
+    'CodeTemplate represents the template for the replacement code.'
 
-    value: str
-    size: int
-    old_mem_address: int
-    new_mem_address: int
+    def __init__(self, targets: List[str], template: str, size: int):
+        self.targets: List[str] = targets
+        self.template: str = template
+        self.size: int = size
 
 
-    def __repr__(self):
-        str_form = ''
-        for line in self.value.split('\n'):
-            str_form += f'{line}\n'
-        str_form += f'Total size: {self.size}\n'
-        str_form += f'Originally at {self.old_mem_address} and now at {self.new_mem_address}\n'
+    def apply(self, operands: List[OperandNode]) -> str:
+        'Apply the given operands to the template.'
+        template: str = self.template
+
+        for target, operand in zip(self.targets, operands):
+            template = template.replace(target, operand.value)
+
+        return template
+
+
+    def __repr__(self) -> str:
+        return f'Targets: {", ".join(self.targets)}\n{self.template}'
+
+
+class SubstitutedCode():
+
+    'SubstitutedCode represents the code that would be substituted in.'
+
+    def __init__(self, operator: Operator, operands: List[OperandNode], template: CodeTemplate,
+                 old_addr: int, new_addr: int):
+        # pylint: disable= too-many-arguments
+        self.operator: Operator = operator
+        self.operands: List[OperandNode] = operands
+        self.template: CodeTemplate = template
+        self.old_addr: int = old_addr
+        self.new_addr: int = new_addr
+
+
+    def apply_template(self):
+        'Apply the operands to the template.'
+        return self.template.apply(self.operands)
+
+
+    def __repr__(self) -> str:
+        operator = self.operator.name.lower()
+        operands = ', '.join([operand.value for operand in self.operands])
+
+        str_form = f'The instruction, {operator} {operands}, would be replaced with...\n'
+        str_form += f'{self.template.template}\n'
+        str_form += f'Total size: {self.template.size}\n'
+        str_form += f'Originally at {self.old_addr} and now at {self.new_addr}\n'
         return str_form
 
 
