@@ -193,7 +193,7 @@ class Compiler():
         pass
 
 
-def parse_substitution_file(filename: str) -> List[List[Union[int, str, str]]]:
+def parse_substitution_file(filename: str) -> List[CodeTemplate]:
     """
     Parse the valid substitutions in the file given so that it can be used by
     get_substitution() method of Compiler.
@@ -204,10 +204,11 @@ def parse_substitution_file(filename: str) -> List[List[Union[int, str, str]]]:
         valid_substitutions: List[str] = file_handler.read().split('----------')
         for index, substitution in enumerate(valid_substitutions):
             substitution_lines: List[str] = substitution.strip().split('\n')
-            size: int = int(regex.search(substitution_lines[0]).group())
-            header: str = substitution_lines[1]
-            substitution: str = '\n'.join(substitution_lines[2:]).strip()
 
-            valid_substitutions[index] = [size, header, substitution]
+            size: int = int(regex.search(substitution_lines[0]).group())
+            targets: List[str] = substitution_lines[1].split()
+            template: str = '\n'.join(substitution_lines[2:]).strip()
+
+            valid_substitutions[index] = CodeTemplate(targets, template, size)
 
         return valid_substitutions
