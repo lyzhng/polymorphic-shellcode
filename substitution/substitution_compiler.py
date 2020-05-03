@@ -16,7 +16,10 @@ if MODULE_DIR_NAME not in sys.path:
 
 import random
 import re
-from typing import List, NamedTuple
+from typing import Dict, List, NamedTuple
+
+
+from substitution_parser import Annotation, OperandNode
 
 
 class SubstitutedCode(NamedTuple):
@@ -46,16 +49,16 @@ class Compiler():
     """
 
     def __init__(self):
-        self.signatures = {}
-        self.substitutions = {}
+        self.signatures: Dict[str, str] = {}
+        self.substitutions: Dict[str, List[List[int, str, str]]] = {}
 
 
-    def add_signature(self, operator, operands, filename):
+    def add_signature(self, operator: str, operands: List[OperandNode], filename: str):
         """
         Associate a filename with the given operator and operands from which
         valid substitutions would be parsed.
         """
-        operands_key = ', '.join([operand.name for operand in operands])
+        operands_key: str = ', '.join([operand.name for operand in operands])
 
         if operator.name in self.signatures:
             self.signatures[operator.name][operands_key] = filename
@@ -63,16 +66,16 @@ class Compiler():
             self.signatures[operator.name] = {operands_key: filename}
 
 
-    def check_coverage(self, parse_data):
+    def check_coverage(self, annotations: List[Annotation]) -> bool:
         """
         Check to see if there is a signature for every command in the parse data and
         print any commands that are not covered.
         """
-        incomplete_coverage = True
+        incomplete_coverage: bool = True
 
-        for parse_annotation in parse_data:
-            operator, operands = parse_annotation[0].name, parse_annotation[1:]
-            operands_key = ', '.join([operand.kind.name for operand in operands])
+        for annotation in annotations:
+            operator = annotation.operator.name
+            operands_key = ', '.join([operand.kind.name for operand in annotation.operands])
 
             if operator not in self.signatures or operands_key not in self.signatures[operator]:
                 incomplete_coverage = False
@@ -81,22 +84,22 @@ class Compiler():
         return incomplete_coverage
 
 
-    def get_substitution(self, operator, operands):
+    def get_substitution(self, annotation: Annotation) -> List[int, str]:
         """
         Retrieve a valid substitution for the instruction as described by the given operator
         and operands.
         """
-        operands_key = ', '.join([operand.kind.name for operand in operands])
-        filename = self.signatures[operator.name][operands_key]
+        operands_key: str = ', '.join([operand.kind.name for operand in annotation.operands])
+        filename: str = self.signatures[annotation.operator.name][operands_key]
         if filename not in self.substitutions:
             self.substitutions[filename] = parse_substitution_file(filename)
 
-        header, chosen_substitution = random.choice(self.substitutions[filename])
+        size, header, chosen_substitution = random.choice(self.substitutions[filename])
 
-        for template, operand in zip(header.split(), operands):
+        for template, operand in zip(header.split(), annotation.operands):
             chosen_substitution = chosen_substitution.replace(template, operand.value)
 
-        return chosen_substitution
+        return [size, chosen_substitution]
 
 
     def apply_substitution(self, parse_data):
