@@ -15,6 +15,26 @@ if MODULE_DIR_NAME not in sys.path:
 
 
 import random
+from typing import NamedTuple
+
+
+class SubstitutedCode(NamedTuple):
+
+    'SubstitutedCode represents the code that was substituted in.'
+
+    value: str
+    size: int
+    old_mem_address: int
+    new_mem_address: int
+
+
+    def __repr__(self):
+        str_form = ''
+        for line in self.value:
+            str_form += f'{line}\n'
+        str_form += f'Total size: {self.size}'
+        str_form += f'Originally at {self.old_mem_address} and now at {self.new_mem_address}\n'
+        return str_form
 
 
 class Compiler():
