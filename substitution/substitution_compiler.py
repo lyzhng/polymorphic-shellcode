@@ -153,7 +153,7 @@ class Compiler():
         """
         Rewrite the given program by substituting each instruction with valid substitutions.
         """
-        return substitute_first_pass(asm_annotations)
+        return self.substitute_first_pass(asm_annotations)
 
 
     def substitute_first_pass(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
