@@ -71,17 +71,17 @@ class Compiler():
         Check to see if there is a signature for every command in the parse data and
         print any commands that are not covered.
         """
-        incomplete_coverage: bool = True
+        complete_coverage: bool = True
 
         for annotation in annotations:
             operator = annotation.operator.name
             operands_key = ', '.join([operand.kind.name for operand in annotation.operands])
 
             if operator not in self.signatures or operands_key not in self.signatures[operator]:
-                incomplete_coverage = False
+                complete_coverage = False
                 print(f'WARNING: Missing signature for {operator} {operands_key}!')
 
-        return incomplete_coverage
+        return complete_coverage
 
 
     def get_substitution(self, annotation: Annotation) -> List[Union[int, str]]:
