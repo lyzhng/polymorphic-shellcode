@@ -16,7 +16,7 @@ if MODULE_DIR_NAME not in sys.path:
 
 import random
 import re
-from typing import Dict, List, NamedTuple
+from typing import Dict, List, NamedTuple, Union
 
 
 from substitution_parser import Annotation, OperandNode
@@ -34,9 +34,9 @@ class SubstitutedCode(NamedTuple):
 
     def __repr__(self):
         str_form = ''
-        for line in self.value:
+        for line in self.value.split('\n'):
             str_form += f'{line}\n'
-        str_form += f'Total size: {self.size}'
+        str_form += f'Total size: {self.size}\n'
         str_form += f'Originally at {self.old_mem_address} and now at {self.new_mem_address}\n'
         return str_form
 
@@ -84,7 +84,7 @@ class Compiler():
         return incomplete_coverage
 
 
-    def get_substitution(self, annotation: Annotation) -> List[int, str]:
+    def get_substitution(self, annotation: Annotation) -> List[Union[int, str]]:
         """
         Retrieve a valid substitution for the instruction as described by the given operator
         and operands.
@@ -102,31 +102,40 @@ class Compiler():
         return [size, chosen_substitution]
 
 
-    def apply_substitution(self, parse_data):
+    def apply_substitution(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
         """
         Rewrite the given program by substituting each instruction with valid substitutions.
         """
-        new_code = []
+        rewritten_program = []
+        current_address = 0
 
-        for parse_annotation in parse_data:
-            operator, operands = parse_annotation[0], parse_annotation[1:]
-            if self.check_coverage([parse_annotation]):
-                new_code.append(self.get_substitution(operator, operands))
+        for annotation in asm_annotations:
+            old_mem_addr: int = annotation.memory_address
+            substituted_code: SubstitutedCode
+
+            if self.check_coverage([annotation]):
+                size, new_code = self.get_substitution(annotation)
+                substituted_code = SubstitutedCode(new_code, size, old_mem_addr, current_address)
             else:
-                operator = operator.name.lower()
-                operands = ', '.join([operand.value for operand in operands])
-                new_code.append(f'{operator} {operands}')
+                operator: str = annotation.operator.name.lower()
+                operands: str = ', '.join([operand.value for operand in annotation.operands])
+                new_code: str = f'{operator} {operands}'
+                size: int = annotation.size
+                substituted_code = SubstitutedCode(new_code, size, old_mem_addr, current_address)
 
-        return '\n'.join(new_code)
+            current_address += substituted_code.size
+            rewritten_program.append(substituted_code)
+
+        return rewritten_program
 
 
-def parse_substitution_file(filename: str) -> List[List[int, str, str]]:
+def parse_substitution_file(filename: str) -> List[List[Union[int, str, str]]]:
     """
     Parse the valid substitutions in the file given so that it can be used by
     get_substitution() method of Compiler.
     """
-    regex = re.compile('\d+')
-    
+    regex = re.compile(r'\d+')
+
     with open(filename) as file_handler:
         valid_substitutions: List[str] = file_handler.read().split('----------')
         for index, substitution in enumerate(valid_substitutions):
