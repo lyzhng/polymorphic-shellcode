@@ -13,9 +13,9 @@ import argparse
 _EXECUTOR_TARGET: str = 'const unsigned char code[];'
 _EXECUTOR_TEMPLATE_PATH = 'templates/executor_template.c'
 _DECRYPTOR_TARGET: str = 'const unsigned char encrypted_execve_sc[];' 
-_DECRYPTOR_TEMPLATE_PATH = 'templates/decryptor_template.c' 
-_OUTPUT_PATH = 'output.c'
-_OUTPUT_EXE_PATH = _OUTPUT_PATH[:_OUTPUT_PATH.index('.')]
+_DECRYPTOR_TEMPLATE_PATH: str = 'templates/decryptor_template.c' 
+_OUTPUT_PATH: str = 'output.c'
+_OUTPUT_EXE_PATH: str = _OUTPUT_PATH[:_OUTPUT_PATH.index('.')]
 _NL: str = '\n'  
 
 
