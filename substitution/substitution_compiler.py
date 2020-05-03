@@ -15,7 +15,8 @@ if MODULE_DIR_NAME not in sys.path:
 
 
 import random
-from typing import NamedTuple
+import re
+from typing import List, NamedTuple
 
 
 class SubstitutedCode(NamedTuple):
@@ -116,18 +117,21 @@ class Compiler():
         return '\n'.join(new_code)
 
 
-def parse_substitution_file(filename):
+def parse_substitution_file(filename: str) -> List[List[int, str, str]]:
     """
     Parse the valid substitutions in the file given so that it can be used by
     get_substitution() method of Compiler.
     """
+    regex = re.compile('\d+')
+    
     with open(filename) as file_handler:
-        valid_substitutions = file_handler.read().split('----------')
+        valid_substitutions: List[str] = file_handler.read().split('----------')
         for index, substitution in enumerate(valid_substitutions):
-            substitution_lines = substitution.strip().split('\n')
-            header = substitution_lines[0]
-            substitution = '\n'.join(substitution_lines[1:]).strip()
+            substitution_lines: List[str] = substitution.strip().split('\n')
+            size: int = int(regex.search(substitution_lines[0]).group())
+            header: str = substitution_lines[1]
+            substitution: str = '\n'.join(substitution_lines[2:]).strip()
 
-            valid_substitutions[index] = [header, substitution]
+            valid_substitutions[index] = [size, header, substitution]
 
         return valid_substitutions
