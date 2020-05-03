@@ -106,6 +106,15 @@ class Compiler():
         """
         Rewrite the given program by substituting each instruction with valid substitutions.
         """
+        return substitute_first_pass(asm_annotations)
+
+
+    def substitute_first_pass(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
+        """
+        Use the annotations provided by the parser and the library of valid substitutions to
+        produce a list of SubstitutedCode which represent the rewritten program.  This still has
+        to go through some post-processing to fix memory offsets for call and jump instructions.
+        """
         rewritten_program = []
         current_address = 0
 
@@ -127,6 +136,14 @@ class Compiler():
             rewritten_program.append(substituted_code)
 
         return rewritten_program
+
+
+    def substitute_second_pass(self, rewritten_program: List[SubstitutedCode]) -> List[str]:
+        """
+        Adjust memory offsets for call and jump instructions after adding more instructions
+        during the substitution process.
+        """
+        pass
 
 
 def parse_substitution_file(filename: str) -> List[List[Union[int, str, str]]]:
