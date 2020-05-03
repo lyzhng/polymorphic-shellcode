@@ -138,7 +138,15 @@ class Compiler():
         for template, operand in zip(header.split(), annotation.operands):
             chosen_substitution = chosen_substitution.replace(template, operand.value)
 
-        return [size, chosen_substitution]
+    def get_default_template(self, annotation: Annotation) -> CodeTemplate:
+        # pylint: disable=no-self-use
+        'Create a template for the given annotation using the original instruction as template.'
+        targets: List[str] = []
+        operator: str = annotation.operator.name.lower()
+        operands: str = ', '.join([operand.value for operand in annotation.operands])
+        template: str = f'{operator} {operands}'
+        size: int = annotation.size
+        return CodeTemplate(targets, template, size)
 
 
     def apply_substitution(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
