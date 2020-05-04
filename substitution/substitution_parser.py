@@ -25,7 +25,7 @@ from substitution_utils import RegexSwitch
 
 
 _CONST = re.compile(r'0x[0-9a-zA-Z]+')
-_MEM = re.compile(r'((BYTE PTR )|(WORD PTR )|(DWORD PTR ))?(\[.+\])', re.IGNORECASE)
+_MEM = re.compile(r'((BYTE PTR )|(WORD PTR )|(DWORD PTR ))?((CS:)|(DS:)|(ES:)|(FS:)|(GS:)|(SS:))?(\[.+\])', re.IGNORECASE)
 _REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl')
 
 
