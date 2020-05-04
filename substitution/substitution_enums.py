@@ -55,6 +55,8 @@ class Operator(enum.Enum):
     CALL = 'call'
     RET = 'return'
 
+    NOP = 'nop'
+
 
     def __eq__(self, other):
         # pylint: disable=comparison-with-callable
