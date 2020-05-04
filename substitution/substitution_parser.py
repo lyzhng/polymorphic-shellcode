@@ -19,6 +19,7 @@ import re
 from typing import List, NamedTuple
 
 
+from pwnlib.shellcraft import nop
 from substitution_enums import Operator, Operand
 from substitution_utils import RegexSwitch
 
@@ -103,6 +104,9 @@ def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
         asm_node = AsmNode(offset, size, code)
         asm_code.append(asm_node)
 
+    asm_node = AsmNode(offset+size, 1, nop().strip())
+    asm_code.append(asm_node)
+
     return asm_code
 
 
@@ -122,20 +126,21 @@ def parse_second_pass(asm_nodes: List[AsmNode]) -> List[Annotation]:
                 annotation.set_operator(operator)
                 break
 
-        operands = [operand.strip('\t, ') for operand in components[1].split(',')]
-        for operand in operands:
-            with RegexSwitch(operand) as case:
-                if case(_CONST):
-                    operand_node = OperandNode(Operand.CONST, operand)
-                    annotation.add_operand(operand_node)
-                elif case(_MEM):
-                    operand_node = OperandNode(Operand.MEM, operand)
-                    annotation.add_operand(operand_node)
-                elif case(_REG):
-                    operand_node = OperandNode(Operand.REG, operand)
-                    annotation.add_operand(operand_node)
-                else:
-                    raise TypeError(f'{operand} is not of a type supported by the parser')
+        if len(components) > 1:
+            operands = [operand.strip('\t, ') for operand in components[1].split(',')]
+            for operand in operands:
+                with RegexSwitch(operand) as case:
+                    if case(_CONST):
+                        operand_node = OperandNode(Operand.CONST, operand)
+                        annotation.add_operand(operand_node)
+                    elif case(_MEM):
+                        operand_node = OperandNode(Operand.MEM, operand)
+                        annotation.add_operand(operand_node)
+                    elif case(_REG):
+                        operand_node = OperandNode(Operand.REG, operand)
+                        annotation.add_operand(operand_node)
+                    else:
+                        raise TypeError(f'{operand} is not of a type supported by the parser')
 
         annotation.set_memory_address(asm_node.offset)
         annotation.set_size(asm_node.size)
