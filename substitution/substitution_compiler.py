@@ -23,14 +23,29 @@ from substitution_parser import Annotation, OperandNode
 from substitution_enums import Operator
 
 
+_CALL_JUMP_INSTRUCTIONS = [
+    Operator.CALL,
+    Operator.JE,
+    Operator.JG,
+    Operator.JGE,
+    Operator.JL,
+    Operator.JLE,
+    Operator.JMP,
+    Operator.JNE,
+    Operator.JNZ,
+    Operator.JZ,
+]
+
+
 class CodeTemplate():
 
     'CodeTemplate represents the template for the replacement code.'
 
-    def __init__(self, targets: List[str], template: str, size: int):
+    def __init__(self, targets: List[str], template: str, size: int, is_original: bool = False):
         self.targets: List[str] = targets
         self.template: str = template
         self.size: int = size
+        self.is_original: bool = is_original
 
 
     def apply(self, operands: List[OperandNode]) -> str:
@@ -135,8 +150,6 @@ class Compiler():
         self.substitutions[filename].pop()
         return template
 
-        for template, operand in zip(header.split(), annotation.operands):
-            chosen_substitution = chosen_substitution.replace(template, operand.value)
 
     def get_default_template(self, annotation: Annotation) -> CodeTemplate:
         # pylint: disable=no-self-use
@@ -146,51 +159,60 @@ class Compiler():
         operands: str = ', '.join([operand.value for operand in annotation.operands])
         template: str = f'{operator} {operands}'
         size: int = annotation.size
-        return CodeTemplate(targets, template, size)
+        return CodeTemplate(targets, template, size, is_original=True)
 
 
-    def apply_substitution(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
+    def apply_substitution(self, asm_annotations: List[Annotation]) -> str:
         """
         Rewrite the given program by substituting each instruction with valid substitutions.
         """
-        return self.substitute_first_pass(asm_annotations)
+        rewritten_program = self.substitute_first_pass(asm_annotations)
+        return self.substitute_second_pass(rewritten_program)
 
 
     def substitute_first_pass(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
         """
         Use the annotations provided by the parser and the library of valid substitutions to
-        produce a list of SubstitutedCode which represent the rewritten program.  This still has
-        to go through some post-processing to fix memory offsets for call and jump instructions.
+        produce a list of SubstitutedCode which represent the rewritten program.
         """
-        rewritten_program = []
-        current_address = 0
+        rewritten_program: List[SubstitutedCode] = []
+        old_new_mem_mapping: Dict[int, int] = {}
+        current_address: int = 0
 
         for annotation in asm_annotations:
-            old_mem_addr: int = annotation.memory_address
-            substituted_code: SubstitutedCode
-
+            template: CodeTemplate
             if self.check_coverage([annotation]):
-                size, new_code = self.get_substitution(annotation)
-                substituted_code = SubstitutedCode(new_code, size, old_mem_addr, current_address)
+                template = self.get_template(annotation)
             else:
-                operator: str = annotation.operator.name.lower()
-                operands: str = ', '.join([operand.value for operand in annotation.operands])
-                new_code: str = f'{operator} {operands}'
-                size: int = annotation.size
-                substituted_code = SubstitutedCode(new_code, size, old_mem_addr, current_address)
+                template = self.get_default_template(annotation)
 
-            current_address += substituted_code.size
-            rewritten_program.append(substituted_code)
+            old_mem_addr: int = annotation.memory_address
+            old_new_mem_mapping[old_mem_addr] = current_address
+            sub_code: SubstitutedCode = SubstitutedCode(annotation.operator, annotation.operands,
+                                                        template, old_mem_addr, current_address)
+            current_address += template.size
+            rewritten_program.append(sub_code)
+
+        for line in rewritten_program:
+            if line.operator in _CALL_JUMP_INSTRUCTIONS:
+                mem_addr = int(line.operands[0].value, 0)
+                line.operands[0] = line.operands[0]._replace(value=old_new_mem_mapping[mem_addr])
+                if line.template.is_original:
+                    operator = line.operator.name.lower()
+                    operand = hex(old_new_mem_mapping[mem_addr])
+                    line.template.template = f'{operator} {operand}'
 
         return rewritten_program
 
 
-    def substitute_second_pass(self, rewritten_program: List[SubstitutedCode]) -> List[str]:
+    def substitute_second_pass(self, rewritten_program: List[SubstitutedCode]) -> str:
+        #pylint: disable=no-self-use
         """
-        Adjust memory offsets for call and jump instructions after adding more instructions
-        during the substitution process.
+        Apply the operands to the template within the rewritten program to get the final
+        program.
         """
-        pass
+        program = [line.apply_template() for line in rewritten_program]
+        return '\n'.join(program)
 
 
 def parse_substitution_file(filename: str) -> List[CodeTemplate]:
