@@ -19,14 +19,14 @@ import re
 from typing import List, NamedTuple
 
 
-from pwnlib.shellcraft import nop
+from pwnlib.shellcraft.i386 import nop # pylint: disable=import-error, no-name-in-module
 from substitution_enums import Operator, Operand
 from substitution_utils import RegexSwitch
 
 
 _CONST = re.compile(r'0x[0-9a-zA-Z]+')
-_MEM = re.compile(r'((BYTE PTR )|(WORD PTR )|(DWORD PTR ))?((CS:)|(DS:)|(ES:)|(FS:)|(GS:)|(SS:))?(\[.+\])', re.IGNORECASE)
-_REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl')
+_MEM = re.compile(r'((BYTE|WORD|DWORD|QWORD) PTR )?(([CDEFGS]S:((\[.+\])|(0x[a-fA-F0-9]+)))|(\[.+\]))', re.IGNORECASE)
+_REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|eip|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl|si|di|sp|bp|ip')
 
 
 class OperandNode(NamedTuple):
@@ -45,26 +45,34 @@ class Annotation():
     'Annotation stores data needed for the compiler to do its work'
 
     def __init__(self):
+        self.operator: Operator = None
         self.operands: List[OperandNode] = []
+        self.memory_address: int = -1
+        self.size: int = 0
 
 
     def set_operator(self, operator: Operator):
+        'Set the operator attribute.'
         self.operator: Operator = operator
 
 
     def set_operands(self, operands: List[OperandNode]):
+        'Set the operands attribute.'
         self.operands = operands
 
 
     def add_operand(self, operand: OperandNode):
+        'Append given operand to list of stored operands.'
         self.operands.append(operand)
 
 
     def set_memory_address(self, memory_address: int):
+        'Set the memory address size attribute.'
         self.memory_address: int = memory_address
 
 
     def set_size(self, size: int):
+        'Set the size attribute.'
         self.size: int = size
 
 
@@ -92,11 +100,11 @@ def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
     memory_offset: opcode asm_code.
     """
     asm_code = []
-    
-    regex = re.compile(r' +(\d+): +((?:[a-fA-F0-9]{2} )+[0-9a-fA-F]{2}) +(.+)')
+
+    regex = re.compile(r' +([a-zA-Z0-9]+): +((?:[a-fA-F0-9]{2} )*[0-9a-fA-F]{2}) +(.+)')
     for line in raw_disassembly:
         match = regex.fullmatch(line)
-        
+
         offset = int(match.group(1), 16)
         size = len(match.group(2).strip().split())
         code = match.group(3)
@@ -117,7 +125,7 @@ def parse_second_pass(asm_nodes: List[AsmNode]) -> List[Annotation]:
     """
     asm_annotations = []
 
-    for index, asm_node in enumerate(asm_nodes):
+    for asm_node in asm_nodes:
         annotation = Annotation()
         components = asm_node.code.strip().split(' ', 1)
 
