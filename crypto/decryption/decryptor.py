@@ -12,7 +12,7 @@ import argparse
 
 _EXECUTOR_TARGET: str = 'const unsigned char code[];'
 _EXECUTOR_TEMPLATE_PATH = 'templates/executor_template.c'
-_DECRYPTOR_TARGET: str = 'const unsigned char encrypted_execve_sc[];' 
+_DECRYPTOR_TARGET: str = 'const unsigned char encrypted_sc[];' 
 _DECRYPTOR_TEMPLATE_PATH: str = 'templates/decryptor_template.c' 
 _OUTPUT_PATH: str = 'output.c'
 _OUTPUT_EXE_PATH: str = _OUTPUT_PATH[:_OUTPUT_PATH.index('.')]
@@ -26,7 +26,7 @@ def fill_template(sc: str) -> str:
 		for line in f:
 			line = line.lstrip()
 			if args.decrypt and line.rstrip() == _DECRYPTOR_TARGET:
-				builder.append(f'const unsigned char encrypted_execve_sc[] = "{sc}";{_NL}')
+				builder.append(f'const unsigned char encrypted_sc[] = "{sc}";{_NL}')
 			elif args.execute and line.rstrip() == _EXECUTOR_TARGET:
 				builder.append(f'const unsigned char code[] = "{sc}";{_NL}')
 			else:
