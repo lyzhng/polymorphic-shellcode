@@ -1,3 +1,4 @@
+Size: 40
 $REG $CONST
 push $REG
 xor $REG, $REG
