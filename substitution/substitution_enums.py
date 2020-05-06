@@ -51,11 +51,22 @@ class Operator(enum.Enum):
     JNE = 'jump when not equal'
     JNZ = 'jump when not zero'
     JZ = 'jump when zero'
+    TEST = 'test'
 
     CALL = 'call'
+    INT = 'int'
     RET = 'return'
 
     NOP = 'nop'
+
+    XCHG = 'xchg'
+    DAS = 'das'
+    BOUND = 'bound'
+    JAE = 'jae'
+    JO = 'jo'
+    ARPL = 'arpl'
+    OUTS = 'outs'
+    INS = 'ins'
 
 
     def __eq__(self, other):
