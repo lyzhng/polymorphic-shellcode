@@ -195,11 +195,13 @@ class Compiler():
 
         for line in rewritten_program:
             if line.operator in _CALL_JUMP_INSTRUCTIONS:
-                mem_addr = int(line.operands[0].value, 0)
-                line.operands[0] = line.operands[0]._replace(value=old_new_mem_mapping[mem_addr])
+                mem_addr: int = int(line.operands[0].value, 0)
+                new_mem_addr: int = old_new_mem_mapping.get(mem_addr, line.operands[0].value)
+                
+                line.operands[0] = line.operands[0]._replace(value=new_mem_addr)
                 if line.template.is_original:
                     operator = line.operator.name.lower()
-                    operand = hex(old_new_mem_mapping[mem_addr])
+                    operand = line.operands[0].value
                     line.template.template = f'{operator} {operand}'
 
         return rewritten_program
