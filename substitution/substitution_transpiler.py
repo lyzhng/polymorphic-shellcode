@@ -17,8 +17,8 @@ if MODULE_DIR_NAME not in sys.path:
 from pwn import asm, context, disasm, unhex
 
 
-context.arch = 'i686'
-context.os = 'linux'
+context.clear(arch='i686')
+context.clear(os='linux')
 
 
 def shellcode_to_asm(shellcode, byte=True, offset=True):
