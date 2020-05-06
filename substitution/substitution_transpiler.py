@@ -28,4 +28,4 @@ def shellcode_to_asm(shellcode, byte=True, offset=True):
 
 def asm_to_shellcode(asm_code):
     'Convert x86 asm code into shellcode.'
-    return asm(asm_code)
+    return asm(asm_code, vma=0x400000)
