@@ -68,6 +68,8 @@ class Operator(enum.Enum):
     OUTS = 'outs'
     INS = 'ins'
 
+    LABEL = 'a label'
+
 
     def __eq__(self, other):
         # pylint: disable=comparison-with-callable
