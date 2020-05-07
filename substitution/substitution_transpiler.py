@@ -26,6 +26,6 @@ def shellcode_to_asm(shellcode, byte=True, offset=True):
     return disasm(shellcode, byte=byte, offset=offset).split('\n')
 
 
-def asm_to_shellcode(asm_code):
+def asm_to_shellcode(asm_code, vma=0):
     'Convert x86 asm code into shellcode.'
-    return asm(asm_code, vma=0x400000)
+    return asm(asm_code, vma=vma)
