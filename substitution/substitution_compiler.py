@@ -35,6 +35,7 @@ _CALL_JUMP_INSTRUCTIONS = [
     Operator.JNZ,
     Operator.JZ,
 ]
+_DEFAULT_LABEL = 'sub_asm_engine'
 
 
 class CodeTemplate():
@@ -193,16 +194,35 @@ class Compiler():
             current_address += template.size
             rewritten_program.append(sub_code)
 
+        mem_label_mapping: Dict[int, str] = {}
+        label_index: int = 0
         for line in rewritten_program:
             if line.operator in _CALL_JUMP_INSTRUCTIONS:
                 mem_addr: int = int(line.operands[0].value, 0)
                 new_mem_addr: int = old_new_mem_mapping.get(mem_addr, mem_addr)
-                
-                line.operands[0] = line.operands[0]._replace(value=hex(new_mem_addr))
-                if line.template.is_original:
-                    line.template.template = f'{line.operator.name.lower()} {hex(new_mem_addr + 0x400000)}'
 
-        return rewritten_program
+                if new_mem_addr <= rewritten_program[-1].new_addr:
+                    address_label = f'{_DEFAULT_LABEL}_{label_index}'
+                    mem_label_mapping[new_mem_addr] = address_label
+                    label_index += 1
+                
+                    line.operands[0] = line.operands[0]._replace(value=address_label)
+                    if line.template.is_original:
+                        line.template.template = f'{line.operator.name.lower()} {address_label}'
+
+        final_program = []
+        for line in rewritten_program:
+            if line.new_addr in mem_label_mapping:
+                address_label: str = mem_label_mapping[line.new_addr]
+                template: CodeTemplate = CodeTemplate([], f'{address_label}:', 0, is_original=True)
+                sub_code: SubstitutedCode = SubstitutedCode(Operator.LABEL, [], template,
+                                                            line.new_addr, line.new_addr)
+                final_program.append(sub_code)
+                final_program.append(line)
+            else:
+                final_program.append(line)
+
+        return final_program
 
 
     def substitute_second_pass(self, rewritten_program: List[SubstitutedCode]) -> str:
