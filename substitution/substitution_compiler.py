@@ -15,7 +15,6 @@ if MODULE_DIR_NAME not in sys.path:
 
 
 import random
-import re
 from typing import Dict, List
 
 
@@ -35,17 +34,16 @@ _CALL_JUMP_INSTRUCTIONS = [
     Operator.JNZ,
     Operator.JZ,
 ]
-_DEFAULT_LABEL = 'sub_asm_engine'
+_LABEL_PREFIX = 'sub_asm_engine'
 
 
 class CodeTemplate():
 
     'CodeTemplate represents the template for the replacement code.'
 
-    def __init__(self, targets: List[str], template: str, size: int, is_original: bool = False):
+    def __init__(self, targets: List[str], template: str, is_original: bool = False):
         self.targets: List[str] = targets
         self.template: str = template
-        self.size: int = size
         self.is_original: bool = is_original
 
 
@@ -68,13 +66,12 @@ class SubstitutedCode():
     'SubstitutedCode represents the code that would be substituted in.'
 
     def __init__(self, operator: Operator, operands: List[OperandNode], template: CodeTemplate,
-                 old_addr: int, new_addr: int):
+                 mem_addr: int):
         # pylint: disable= too-many-arguments
         self.operator: Operator = operator
         self.operands: List[OperandNode] = operands
         self.template: CodeTemplate = template
-        self.old_addr: int = old_addr
-        self.new_addr: int = new_addr
+        self.mem_addr: int = mem_addr
 
 
     def apply_template(self):
@@ -88,8 +85,7 @@ class SubstitutedCode():
 
         str_form = f'The instruction, {operator} {operands}, would be replaced with...\n'
         str_form += f'{self.template.template}\n'
-        str_form += f'Total size: {self.template.size}\n'
-        str_form += f'Originally at {self.old_addr} and now at {self.new_addr}\n'
+        str_form += f'Originally located at {self.mem_addr}\n'
         return str_form
 
 
@@ -159,8 +155,7 @@ class Compiler():
         operator: str = annotation.operator.name.lower()
         operands: str = ', '.join([operand.value for operand in annotation.operands])
         template: str = f'{operator} {operands}'
-        size: int = annotation.size
-        return CodeTemplate(targets, template, size, is_original=True)
+        return CodeTemplate(targets, template, is_original=True)
 
 
     def apply_substitution(self, asm_annotations: List[Annotation]) -> str:
@@ -168,7 +163,8 @@ class Compiler():
         Rewrite the given program by substituting each instruction with valid substitutions.
         """
         rewritten_program = self.substitute_first_pass(asm_annotations)
-        return self.substitute_second_pass(rewritten_program)
+        mem_offset_corrected_program = self.substitute_second_pass(rewritten_program)
+        return self.substitute_third_pass(mem_offset_corrected_program)
 
 
     def substitute_first_pass(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
@@ -177,56 +173,55 @@ class Compiler():
         produce a list of SubstitutedCode which represent the rewritten program.
         """
         rewritten_program: List[SubstitutedCode] = []
-        old_new_mem_mapping: Dict[int, int] = {}
-        current_address: int = 0
 
+        template: CodeTemplate
         for annotation in asm_annotations:
-            template: CodeTemplate
             if self.check_coverage([annotation]):
                 template = self.get_template(annotation)
             else:
                 template = self.get_default_template(annotation)
 
-            old_mem_addr: int = annotation.memory_address
-            old_new_mem_mapping[old_mem_addr] = current_address
             sub_code: SubstitutedCode = SubstitutedCode(annotation.operator, annotation.operands,
-                                                        template, old_mem_addr, current_address)
-            current_address += template.size
+                                                        template, annotation.memory_address)
             rewritten_program.append(sub_code)
 
+        return rewritten_program
+
+    def substitute_second_pass(self, program: List[SubstitutedCode]) -> List[SubstitutedCode]:
+        # pylint: disable=no-self-use
+        """
+        Correct the memory offsets for call and jump instructions after substituting in
+        instructions.
+        """
         mem_label_mapping: Dict[int, str] = {}
+        last_mem_addr: int = program[-1].mem_addr
         label_index: int = 0
-        for line in rewritten_program:
+        for line in program:
             if line.operator in _CALL_JUMP_INSTRUCTIONS:
                 mem_addr: int = int(line.operands[0].value, 0)
-                new_mem_addr: int = old_new_mem_mapping.get(mem_addr, mem_addr)
 
-                if new_mem_addr <= rewritten_program[-1].new_addr:
-                    address_label = f'{_DEFAULT_LABEL}_{label_index}'
-                    mem_label_mapping[new_mem_addr] = address_label
+                if mem_addr <= last_mem_addr:
+                    address_label = f'{_LABEL_PREFIX}_{label_index}'
+                    mem_label_mapping[mem_addr] = address_label
                     label_index += 1
-                
+
                     line.operands[0] = line.operands[0]._replace(value=address_label)
                     if line.template.is_original:
                         line.template.template = f'{line.operator.name.lower()} {address_label}'
 
         final_program = []
-        for line in rewritten_program:
-            if line.new_addr in mem_label_mapping:
-                address_label: str = mem_label_mapping[line.new_addr]
-                template: CodeTemplate = CodeTemplate([], f'{address_label}:', 0, is_original=True)
-                sub_code: SubstitutedCode = SubstitutedCode(Operator.LABEL, [], template,
-                                                            line.new_addr, line.new_addr)
+        for line in program:
+            if line.mem_addr in mem_label_mapping:
+                address_label: str = mem_label_mapping[line.mem_addr]
+                sub_code: SubstitutedCode = _create_label_sub_code(address_label)
                 final_program.append(sub_code)
-                final_program.append(line)
-            else:
-                final_program.append(line)
+            final_program.append(line)
 
         return final_program
 
 
-    def substitute_second_pass(self, rewritten_program: List[SubstitutedCode]) -> str:
-        #pylint: disable=no-self-use
+    def substitute_third_pass(self, rewritten_program: List[SubstitutedCode]) -> str:
+        # pylint: disable=no-self-use
         """
         Apply the operands to the template within the rewritten program to get the final
         program.
@@ -240,17 +235,20 @@ def parse_substitution_file(filename: str) -> List[CodeTemplate]:
     Parse the valid substitutions in the file given so that it can be used by
     get_substitution() method of Compiler.
     """
-    regex = re.compile(r'\d+')
-
     with open(filename) as file_handler:
         valid_substitutions: List[str] = file_handler.read().split('----------')
         for index, substitution in enumerate(valid_substitutions):
             substitution_lines: List[str] = substitution.strip().split('\n')
 
-            size: int = int(regex.search(substitution_lines[0]).group())
-            targets: List[str] = substitution_lines[1].split()
-            template: str = '\n'.join(substitution_lines[2:]).strip()
+            targets: List[str] = substitution_lines[0].split()
+            template: str = '\n'.join(substitution_lines[1:]).strip()
 
-            valid_substitutions[index] = CodeTemplate(targets, template, size)
+            valid_substitutions[index] = CodeTemplate(targets, template)
 
         return valid_substitutions
+
+
+def _create_label_sub_code(address_label: str) -> SubstitutedCode:
+    template: CodeTemplate = CodeTemplate([], f'{address_label}:', is_original=True)
+    sub_code: SubstitutedCode = SubstitutedCode(Operator.LABEL, [], template, address_label)
+    return sub_code
