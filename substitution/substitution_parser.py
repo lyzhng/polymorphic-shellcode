@@ -25,8 +25,8 @@ from substitution_utils import RegexSwitch
 
 
 _CONST = re.compile(r'0x[0-9a-zA-Z]+')
-_MEM = re.compile(r'((BYTE|WORD|DWORD|QWORD) PTR )?(([CDEFGS]S:((\[.+\])|(0x[a-fA-F0-9]+)))|(\[.+\]))', re.IGNORECASE)
-_REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|eip|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl|si|di|sp|bp|ip')
+_MEM = re.compile(r'((BYTE|WORD|DWORD|QWORD) PTR )?(([CDEFGS]S:((\[.+\])|(0x[a-fA-F0-9]+)))|(\[.+\]))', re.IGNORECASE) #pylint: disable=line-too-long
+_REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|eip|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl|si|di|sp|bp|ip') #pylint: disable=line-too-long
 
 
 class OperandNode(NamedTuple):
@@ -71,14 +71,9 @@ class Annotation():
         self.memory_address: int = memory_address
 
 
-    def set_size(self, size: int):
-        'Set the size attribute.'
-        self.size: int = size
-
-
     def __repr__(self):
         operands = ', '.join([operand.value for operand in self.operands])
-        return f'{self.operator} {operands} with {self.size} bytes at {self.memory_address}'
+        return f'{self.operator} {operands} at {self.memory_address}'
 
 
 class AsmNode(NamedTuple):
@@ -86,11 +81,10 @@ class AsmNode(NamedTuple):
     'AsmNode stores the offset, size, and code of a line in the raw disassembly.'
 
     offset: int
-    size: int
     code: str
 
     def __repr__(self):
-        return f'{self.code} is {self.size} bytes at {self.offset}.'
+        return f'{self.code} at {self.offset}.'
 
 
 def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
@@ -109,10 +103,10 @@ def parse_first_pass(raw_disassembly: List[str]) -> List[AsmNode]:
         size = len(match.group(2).strip().split())
         code = match.group(3)
 
-        asm_node = AsmNode(offset, size, code)
+        asm_node = AsmNode(offset, code)
         asm_code.append(asm_node)
 
-    asm_node = AsmNode(offset+size, 1, nop().strip())
+    asm_node = AsmNode(offset+size, nop().strip())
     asm_code.append(asm_node)
 
     return asm_code
@@ -151,8 +145,6 @@ def parse_second_pass(asm_nodes: List[AsmNode]) -> List[Annotation]:
                         raise TypeError(f'{operand} is not of a type supported by the parser')
 
         annotation.set_memory_address(asm_node.offset)
-        annotation.set_size(asm_node.size)
-
         asm_annotations.append(annotation)
 
     return asm_annotations
