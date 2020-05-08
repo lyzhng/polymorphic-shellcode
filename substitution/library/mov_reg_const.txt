@@ -1,0 +1,16 @@
+$REG $CONST
+push $CONST
+pop $REG
+----------
+$REG $CONST
+push eax
+mov eax, $CONST
+mov $REG, eax
+pop eax
+----------
+$REG $CONST
+push eax
+push $CONST
+pop eax
+mov $REG, eax
+pop eax
