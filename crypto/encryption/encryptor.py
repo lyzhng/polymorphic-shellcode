@@ -1,14 +1,26 @@
 # reference https://cryptography.io/en/latest/
 
 
+import sys
+import os
+
+
+MODULE_DIR_NAME = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+if MODULE_DIR_NAME not in sys.path:
+    sys.path.insert(0, MODULE_DIR_NAME)
+
+
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
+from typing import Tuple
+
+
+key: bytes = os.urandom(32)
+iv: bytes = os.urandom(16)
 
 
 backend = default_backend()
-key = b'\x23\x32' * 16
-iv = b'\x46' * 16
 cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
 
 
@@ -19,11 +31,11 @@ def shellcodify(bytestring: bytes) -> str:
     return ''.join(list(mapped))
 
 
-def encrypt_sc(sc: bytes) -> bytes:
+def encrypt_sc(sc: bytes) -> Tuple[str, str, bytes]:
     encryptor = cipher.encryptor()
     padded_sc = pad_data(sc)
     encrypted = encryptor.update(padded_sc) + encryptor.finalize()
-    return encrypted
+    return (key, iv, encrypted)
 
 
 def decrypt_sc(encrypted_sc: bytes) -> bytes:
