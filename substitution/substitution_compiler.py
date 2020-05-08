@@ -22,7 +22,7 @@ from substitution_parser import Annotation, OperandNode
 from substitution_enums import Operator
 
 
-_CALL_JUMP_INSTRUCTIONS = [
+_CALL_JUMP_INSTRUCTIONS: List[Operator] = [
     Operator.CALL,
     Operator.JE,
     Operator.JG,
@@ -34,7 +34,7 @@ _CALL_JUMP_INSTRUCTIONS = [
     Operator.JNZ,
     Operator.JZ,
 ]
-_LABEL_PREFIX = 'sub_asm_engine'
+_LABEL_PREFIX: str = 'sub_asm_engine'
 
 
 class CodeTemplate():
@@ -74,16 +74,16 @@ class SubstitutedCode():
         self.mem_addr: int = mem_addr
 
 
-    def apply_template(self):
+    def apply_template(self) -> None:
         'Apply the operands to the template.'
         return self.template.apply(self.operands)
 
 
     def __repr__(self) -> str:
-        operator = self.operator.name.lower()
-        operands = ', '.join([operand.value for operand in self.operands])
+        operator: str = self.operator.name.lower()
+        operands: str = ', '.join([operand.value for operand in self.operands])
 
-        str_form = f'The instruction, {operator} {operands}, would be replaced with...\n'
+        str_form: str = f'The instruction, {operator} {operands}, would be replaced with...\n'
         str_form += f'{self.template.template}\n'
         str_form += f'Originally located at {self.mem_addr}\n'
         return str_form
@@ -101,7 +101,7 @@ class Compiler():
         self.substitutions: Dict[str, List[List[int, str, str]]] = {}
 
 
-    def add_signature(self, operator: str, operands: List[OperandNode], filename: str):
+    def add_signature(self, operator: str, operands: List[OperandNode], filename: str) -> None:
         """
         Associate a filename with the given operator and operands from which
         valid substitutions would be parsed.
@@ -122,8 +122,8 @@ class Compiler():
         complete_coverage: bool = True
 
         for annotation in annotations:
-            operator = annotation.operator.name
-            operands_key = ', '.join([operand.kind.name for operand in annotation.operands])
+            operator: str = annotation.operator.name
+            operands_key: str = ', '.join([operand.kind.name for operand in annotation.operands])
 
             if operator not in self.signatures or operands_key not in self.signatures[operator]:
                 complete_coverage = False
@@ -143,7 +143,7 @@ class Compiler():
             self.substitutions[filename] = parse_substitution_file(filename)
 
         self.substitutions[filename].append(self.get_default_template(annotation))
-        template = random.choice(self.substitutions[filename])
+        template: CodeTemplate = random.choice(self.substitutions[filename])
         self.substitutions[filename].pop()
         return template
 
@@ -162,9 +162,9 @@ class Compiler():
         """
         Rewrite the given program by substituting each instruction with valid substitutions.
         """
-        rewritten_program = self.substitute_first_pass(asm_annotations)
-        mem_offset_corrected_program = self.substitute_second_pass(rewritten_program)
-        return self.substitute_third_pass(mem_offset_corrected_program)
+        program: List[SubstitutedCode] = self.substitute_first_pass(asm_annotations)
+        rewritten_program: List[SubstitutedCode] = self.substitute_second_pass(program)
+        return self.substitute_third_pass(rewritten_program)
 
 
     def substitute_first_pass(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
@@ -209,7 +209,7 @@ class Compiler():
                     if line.template.is_original:
                         line.template.template = f'{line.operator.name.lower()} {address_label}'
 
-        final_program = []
+        final_program: List[SubstitutedCode] = []
         for line in program:
             if line.mem_addr in mem_label_mapping:
                 address_label: str = mem_label_mapping[line.mem_addr]
@@ -226,7 +226,7 @@ class Compiler():
         Apply the operands to the template within the rewritten program to get the final
         program.
         """
-        program = [line.apply_template() for line in rewritten_program]
+        program: List[str] = [line.apply_template() for line in rewritten_program]
         return '\n'.join(program)
 
 
@@ -249,6 +249,9 @@ def parse_substitution_file(filename: str) -> List[CodeTemplate]:
 
 
 def _create_label_sub_code(address_label: str) -> SubstitutedCode:
+    """
+    Create a SubstitutedCode object that represents the label specifed.
+    """
     template: CodeTemplate = CodeTemplate([], f'{address_label}:', is_original=True)
     sub_code: SubstitutedCode = SubstitutedCode(Operator.LABEL, [], template, address_label)
     return sub_code
