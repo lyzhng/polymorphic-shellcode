@@ -1,0 +1,20 @@
+$REG1 $REG2
+neg $REG2
+add $REG1, $REG2
+neg $REG2
+----------
+$REG1 $REG2
+push $REG1
+xor $REG1, $REG1
+sub $REG1, $REG2
+mov $REG2, $REG1
+pop $REG1
+add $REG1, $REG2
+neg $REG2
+----------
+$REG1 $REG2
+push $REG2
+sub $REG2, $REG1
+mov $REG1, $REG2
+neg $REG1
+pop $REG2
