@@ -1,15 +1,18 @@
-Size: 3
 $REG1 $REG2
-mov eax, $REG1
-add eax, $REG2
+push eax
+mov eax, $REG2
+add eax, $REG1
+mov $REG1, eax
+pop eax
 ----------
-Size: 5
 $REG1 $REG2
-mov eax, 0
+push eax
+xor eax, eax
 sub eax, $REG2
-sub $REG1, $REG2
+sub $REG1, eax
+pop eax
 ----------
-Size: 3
 $REG1 $REG2
 neg $REG2
 sub $REG1, $REG2
+neg $REG2
