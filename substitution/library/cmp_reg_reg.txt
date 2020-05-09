@@ -1,0 +1,20 @@
+$REG1 $REG2
+push eax
+mov eax, $REG1
+cmp eax, $REG2
+pop eax
+----------
+$REG $REG
+push eax
+mov eax, $REG2
+cmp eax, $REG1
+pop eax
+----------
+$REG $REG
+push eax
+push ebx
+mov ebx, $REG1
+mov eax, $REG2
+cmp ebx, eax
+pop ebx
+pop eax
