@@ -1,0 +1,19 @@
+$CONST
+push eax
+xor eax, eax
+pop eax
+push $CONST
+----------
+$CONST
+push eax
+xor eax, eax
+add esp, eax
+pop eax
+push $CONST
+----------
+$CONST
+push eax
+and eax, 1
+xor eax, eax
+pop eax
+push $CONST
