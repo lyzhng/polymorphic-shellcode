@@ -1,0 +1,16 @@
+$MEM
+pop $MEM
+push eax
+xor eax, eax
+pop eax
+----------
+$MEM
+pop $MEM
+push eax
+mov eax, la
+xor eax, la
+pop eax
+----------
+$MEM
+pop $MEM
+mov eax, eax
