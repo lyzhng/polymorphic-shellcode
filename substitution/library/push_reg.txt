@@ -1,0 +1,19 @@
+$REG
+push eax
+xor eax, eax
+pop eax
+push $REG
+----------
+$REG
+push eax
+xor eax, eax
+add esp, eax
+pop eax
+push $REG
+----------
+$REG
+push eax
+and eax, 1
+xor eax, eax
+pop eax
+push $REG
