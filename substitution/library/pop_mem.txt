@@ -7,8 +7,8 @@ pop eax
 $MEM
 pop $MEM
 push eax
-mov eax, la
-xor eax, la
+mov eax, al
+xor eax, al
 pop eax
 ----------
 $MEM
