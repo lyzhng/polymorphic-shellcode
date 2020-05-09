@@ -7,14 +7,14 @@ pop eax
 ----------
 $REG $CONST
 push eax
-mv eax, $REG
+mov eax, $REG
 add eax, $CONST
-mv $REG, eax
+mov $REG, eax
 pop eax
 ----------
 $REG $CONST
 push eax
-mv eax, $CONST
+mov eax, $CONST
 add $eax, $REG
-mv $REG, $eax
+mov $REG, $eax
 pop eax

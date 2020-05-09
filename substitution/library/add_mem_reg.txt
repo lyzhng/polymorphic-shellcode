@@ -15,8 +15,8 @@ pop eax
 $MEM $REG
 push eax
 push ebx
-mv eax, ebx
+mov eax, ebx
 add $MEM, $REG
-mv ebx, eax
+mov ebx, eax
 pop ebx
 pop eax

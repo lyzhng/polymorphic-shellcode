@@ -7,7 +7,7 @@ pop eax
 ----------
 $MEM $CONST
 push eax
-mv eax, $CONST
+mov eax, $CONST
 add $MEM, eax
 pop eax
 ----------
