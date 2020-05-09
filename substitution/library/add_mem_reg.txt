@@ -1,0 +1,22 @@
+$MEM $REG
+push eax
+push $REG
+pop eax
+add $MEM, eax
+pop eax
+----------
+$MEM $REG
+push eax
+xor eax, eax
+add esp, eax
+add $MEM, $REG
+pop eax
+----------
+$MEM $REG
+push eax
+push ebx
+mv eax, ebx
+add $MEM, $REG
+mv ebx, eax
+pop ebx
+pop eax
