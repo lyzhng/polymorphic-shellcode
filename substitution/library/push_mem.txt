@@ -1,0 +1,19 @@
+$MEM
+push eax
+xor eax, eax
+pop eax
+push $MEM
+----------
+$MEM
+push eax
+xor eax, eax
+add esp, eax
+pop eax
+push $MEM
+----------
+$MEM
+push eax
+and eax, 1
+xor eax, eax
+pop eax
+push $MEM
