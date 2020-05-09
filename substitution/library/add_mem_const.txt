@@ -1,0 +1,18 @@
+$MEM, $CONST
+push eax
+push $CONST
+pop eax
+add $MEM, eax
+pop eax
+----------
+$MEM, $CONST
+push eax
+mv eax, $CONST
+add $MEM, eax
+pop eax
+----------
+$MEM, $CONST
+push eax
+add $MEM, $CONST
+xor $eax, $eax
+pop eax
