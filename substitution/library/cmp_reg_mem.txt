@@ -1,0 +1,20 @@
+$REG $MEM
+push eax
+mov eax, $MEM
+cmp $REG, [eax]
+pop eax
+----------
+$REG $MEM
+push eax
+mov eax, $REG
+cmp $MEM, eax
+pop eax
+----------
+$REG $MEM
+push eax
+push ebx
+mov eax, $MEM
+mov ebx, $REG
+cmp eax, ebx
+pop ebx
+pop eax
