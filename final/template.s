@@ -22,13 +22,7 @@ decrypt:
         .section    .rodata.str1.4,"aMS",@progbits,1
         .align 4
 .LC0:
-        .string ""
-        .ascii  ""
-        .ascii  ""
-        .ascii  ""
-        .ascii  ""
-        .ascii  ""
-        .ascii  ""
+        {{ ENCRYPTED_SC }}
         .text
         .globl main
         .type  main, @function
@@ -53,14 +47,13 @@ print_data:
         .type   iv.10091, @object
         .size   iv.10091, 16
 iv.10091:
-        .ascii  ""
+        {{ IV }}
         .section	.rodata
         .align 32
         .type   key.10090, @object
         .size   key.10090, 32
 key.10090:
-        .ascii  ""
-        .ascii  ""
+        {{ KEY }}
         .section    text.__x86.get_pc_thunk.ax,"axG",@progbits,__x86.get_pc_thunk.ax,comdat
         .globl  __x86.get_pc_thunk.ax
         .hidden __x86.get_pc_thunk.ax
