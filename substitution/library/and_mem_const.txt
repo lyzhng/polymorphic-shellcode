@@ -1,0 +1,27 @@
+$MEM $CONST
+not $MEM
+not $CONST
+or $MEM, $CONST
+not $MEM
+----------
+$MEM $CONST
+push eax
+mov eax, $CONST
+and $MEM, eax
+or $MEM, $MEM
+and eax, $MEM
+or eax, eax
+and $MEM, eax
+pop eax
+----------
+$MEM $CONST
+push eax
+push ebx
+mov eax, $MEM
+mov ebx, $CONST
+and eax, eax
+and ebx, ebx
+and eax, ebx
+mov $MEM, eax
+pop ebx
+pop eax
