@@ -31,7 +31,7 @@
         push    ebx
         sub     esp, 28
         call    __x86.get_pc_thunk.bx
-        add     ebx, OFFSET_FLAT:_GLOBAL_OFFSET_TABLE_
+        add     ebx, OFFSET FLAT:_GLOBAL_OFFSET_TABLE_
         mov     edi, DWORD PTR 64[esp]
         call    EVP_CIPHER_CTX_new@PLT
         test    eax, eax
