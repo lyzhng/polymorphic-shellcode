@@ -5,9 +5,9 @@ import parser
 from compiler import Compiler
 from utils import RegexSwitch
 
-_ENCRYPTED_SC = b''
-_IV = b''
-_KEY = b''
+_ENCRYPTED_SC = r''
+_IV = r''
+_KEY = r''
 
 _ENCRYPTED_SC_TARGET_REGEX = re.compile(r'{{ ENCRYPTED_SC }}')
 _IV_TARGET_REGEX = re.compile(r'{{ IV }}')
@@ -27,8 +27,8 @@ def main():
                 elif case(_IV_TARGET_REGEX):
                     final_program += f'        .ascii "{_IV}"\n'
                 elif case(_KEY_TARGET_REGEX):
-                    key_part_one: str = _KEY[:21]
-                    key_part_two: str = _KEY[21:]
+                    key_part_one: str = _KEY[:60]
+                    key_part_two: str = _KEY[60:]
                     final_program += f'        .ascii "{key_part_one}"\n'
                     final_program += f'        .ascii "{key_part_two}"\n'
                 elif case(_TEMPLATE_TARGET_REGEX):
