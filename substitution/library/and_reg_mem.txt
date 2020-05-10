@@ -1,0 +1,28 @@
+$REG $MEM 
+not $MEM
+not $REG
+or $REG, $MEM
+not $REG
+not $MEM
+----------
+$REG $MEM 
+push eax
+mov eax, $MEM
+and $REG, eax
+or $REG, $REG
+and eax, $REG
+or eax, eax
+and $REG, eax
+pop eax
+----------
+$REG $MEM 
+push eax
+push ebx
+mov eax, $REG
+mov ebx, $MEM
+and eax, eax
+and ebx, ebx
+and eax, ebx
+mov $REG, eax
+pop ebx
+pop eax
