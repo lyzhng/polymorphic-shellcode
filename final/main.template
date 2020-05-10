@@ -1,0 +1,68 @@
+#define_operand_type 4[esp] = MEM
+#define_operand_type -16 = CONST
+#define_operand_type DWORD PTR -4[ecx] = MEM
+#define_operand_type 1308 = CONST
+#define_operand_type __x86.get_pc_thunk.ax = MEM
+#define_operand_type OFFSET FLAT:_GLOBAL_OFFSET_TABLE_ = CONST
+#define_operand_type DWORD PTR -40[ebp] = MEM
+#define_operand_type -1618844541 = CONST
+#define_operand_type DWORD PTR -36[ebp] = MEM
+#define_operand_type 602339615 = CONST
+#define_operand_type DWORD PTR -32[ebp] = MEM
+#define_operand_type -1583735674 = CONST
+#define_operand_type DWORD PTR -28[ebp] = MEM
+#define_operand_type -1369151648 = CONST
+#define_operand_type -168[ebp] = MEM
+#define_operand_type .LC0@GOTOFF[eax] = MEM
+#define_operand_type 32 = MEM
+#define_operand_type movsd = MEM
+#define_operand_type 12 = CONST
+#define_operand_type -40[ebp] = MEM
+#define_operand_type key.10090@GOTOFF[eax] = MEM
+#define_operand_type 128 = CONST
+#define_operand_type decrypt = MEM
+#define_operand_type 0 = CONST
+#define_operand_type -12[ebp] = MEM
+#define_operand_type -4[ecx] = MEM
+
+
+        lea     ecx, 4[esp]
+        and     esp, -16
+        push    DWORD PTR -4[ecx]
+        push    ebp
+        mov     ebp, esp
+        push    edi
+        push    esi
+        push    ecx
+        sub     esp, 1308
+        call    __x86.get_pc_thunk.ax
+        add     eax, OFFSET FLAT:_GLOBAL_OFFSET_TABLE_
+        mov     DWORD PTR -40[ebp], -1618844541
+        mov     DWORD PTR -36[ebp], 602339615
+        mov     DWORD PTR -32[ebp], -1583735674
+        mov     DWORD PTR -28[ebp], -1369151648
+        lea     edi, -168[ebp]
+        lea     esi, .LC0@GOTOFF[eax]
+        mov     ecx, 32
+        rep     movsd
+        mov     esi, esp
+        sub     esp, 12
+        push    esi
+        lea     edx, -40[ebp]
+        push    edx
+        lea     eax, key.10090@GOTOFF[eax]
+        push    eax
+        push    128
+        lea     eax, -168[ebp]
+        push    eax
+        call    decrypt
+        add     esp, 32
+        call    esi
+        mov     eax, 0
+        lea     esp, -12[ebp]
+        pop     ecx
+        pop     esi
+        pop     edi
+        pop     ebp
+        lea     esp, -4[ecx]
+        ret

@@ -1,0 +1,17 @@
+#define_operand_type 1 = CONST
+#define_operand_type 8 = CONST
+#define_operand_type BYTE PTR -1[esi] = MEM
+#define_operand_type printf@PLT = MEM
+#define_operand_type 16 = CONST
+#define_operand_type .L17 = MEM
+
+
+        add     esi, 1
+        sub     esp, 8
+        movzx   eax, BYTE PTR -1[esi]
+        push    eax
+        push    ebp
+        call    printf@PLT
+        add     esp, 16
+        cmp     edi, esi
+        jne     .L17

@@ -1,0 +1,22 @@
+#define_operand_type 12 = CONST
+#define_operand_type __x86.get_pc_thunk.bx = MEM
+#define_operand_type OFFSET FLAT:_GLOBAL_OFFSET_TABLE_ = CONST
+#define_operand_type DWORD PTR 32[esp] = MEM
+#define_operand_type DWORD PTR 36[esp] = MEM
+#define_operand_type .L16 = MEM
+#define_operand_type .LC1@GOTOFF[ebx] = MEM
+
+
+        push    ebp
+        push    edi
+        push    esi
+        push    ebx
+        sub     esp, 12
+        call    __x86.get_pc_thunk.bx
+        add     ebx, OFFSET FLAT:_GLOBAL_OFFSET_TABLE_
+        mov     esi, DWORD PTR 32[esp]
+        mov     edi, DWORD PTR 36[esp]
+        test    edi, edi
+        jle     .L16
+        add     edi, esi
+        lea     ebp, .LC1@GOTOFF[ebx]
