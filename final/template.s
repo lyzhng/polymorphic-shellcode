@@ -19,7 +19,7 @@ decrypt:
 .L12:
         call    handle_errors
         .size   decrypt, .-decrypt
-        .section    .rodata
+        .section    .rodata.str1.4,"aMS",@progbits,1
         .align 4
 .LC0:
         .string ""
@@ -37,7 +37,7 @@ main:
         .size   main, .-main
         .section    .rodata.str1.1,"aMS",@progbits,1
 .LC1:
-        .string ""
+        .string "\\x%02X"
         .text
         .globl  print_data
         .type   print_data, @function
@@ -48,12 +48,18 @@ print_data:
 .L16:
         {{ L16 }}
         .size   print_data, .-print_data
-        .section    .rodata
+        .data
+        .align 4
+        .type   iv.10091, @object
+        .size   iv.10091, 16
+iv.10091:
+        .ascii  ""
+        .section	.rodata
         .align 32
         .type   key.10090, @object
         .size   key.10090, 32
 key.10090:
-        .string ""
+        .ascii  ""
         .ascii  ""
         .section    text.__x86.get_pc_thunk.ax,"axG",@progbits,__x86.get_pc_thunk.ax,comdat
         .globl  __x86.get_pc_thunk.ax
