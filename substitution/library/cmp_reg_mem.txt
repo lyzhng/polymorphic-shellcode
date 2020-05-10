@@ -1,7 +1,7 @@
 $REG $MEM
 push eax
 mov eax, $MEM
-cmp $REG, [eax]
+cmp $REG, eax
 pop eax
 ----------
 $REG $MEM

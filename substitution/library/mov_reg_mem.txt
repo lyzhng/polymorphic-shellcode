@@ -1,11 +1,11 @@
 $REG $MEM
-push [$MEM]
+push $MEM
 pop $REG
 ----------
 $REG $MEM
 push eax
 mov eax, $MEM
-mov $REG1, [eax]
+mov $REG1, eax
 pop eax
 ----------
 $REG $MEM
@@ -14,6 +14,6 @@ push ebx
 mov ebx, $REG
 xor ebx, ebx
 mov eax, $MEM
-mov $REG, [eax]
+mov $REG, eax
 pop ebx
 pop eax

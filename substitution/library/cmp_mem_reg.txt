@@ -7,7 +7,7 @@ pop eax
 $MEM $REG
 push eax
 mov eax, $MEM
-cmp [eax], $REG
+cmp eax, $REG
 pop eax
 ----------
 $MEM $REG
@@ -15,7 +15,7 @@ push eax
 push ebx
 mov eax, $MEM
 mov ebx, $REG
-cmp [eax], ebx
+cmp eax, ebx
 xor eax, eax
 add esp, eax
 pop ebx
