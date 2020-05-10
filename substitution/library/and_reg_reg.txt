@@ -16,6 +16,13 @@ and $REG1, eax
 pop eax
 ----------
 $REG1 $REG2
-and a, a
-and b, b
-and a, b
+push eax
+push ebx
+mov eax, $REG1
+mov ebx, $REG2
+and eax, eax
+and ebx, ebx
+and eax, ebx
+mov $REG1, eax
+pop ebx
+pop eax
