@@ -1,0 +1,21 @@
+$REG1 $REG2
+not $REG1
+not $REG2
+or $REG1, $REG2
+not $REG1
+not $REG2
+----------
+$REG1 $REG2
+push eax
+mov eax, $REG2
+and $REG1, $REG2
+or $REG1, $REG1
+and eax, $REG1
+or eax, eax
+and $REG1, eax
+pop eax
+----------
+$REG1 $REG2
+and a, a
+and b, b
+and a, b
