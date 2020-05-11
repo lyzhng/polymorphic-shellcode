@@ -9,8 +9,8 @@ import re
 from typing import Dict, List, NamedTuple, Tuple
 
 
-from enums import Operator, Operand
-from utils import RegexSwitch, Switch
+from .enums import Operator, Operand
+from .utils import RegexSwitch, Switch
 
 
 _CONST = re.compile(r'0x[0-9a-zA-Z]+')

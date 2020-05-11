@@ -3,12 +3,13 @@ The compiler module is responsible for rewriting the given program with
 different instructions.
 """
 
+import os
 import random
 from typing import Dict, List
 
 
-from enums import Operator
-from parser import Annotation, OperandNode
+from .enums import Operator
+from .parser import Annotation, OperandNode
 
 
 class CodeTemplate():
@@ -68,7 +69,7 @@ class Compiler():
 
     def __init__(self):
         self.signatures: Dict[str, str] = {}
-        self.substitutions: Dict[str, List[List[int, str, str]]] = {}
+        self.substitutions: Dict[str, List[List[Union[int, str, str]]]] = {}
 
 
     def add_signature(self, operator: str, operands: List[OperandNode], filename: str) -> None:
@@ -82,6 +83,25 @@ class Compiler():
             self.signatures[operator.name][operands_key] = filename
         else:
             self.signatures[operator.name] = {operands_key: filename}
+
+
+    def discover_signatures(self, directory: str) -> None:
+        """
+        Scan through the directory for files of the format operator_operand+.txt and
+        create a signature for them.
+        """
+        for filename in os.listdir(directory):
+            if not filename.endswith('.txt'):
+                continue
+            operator: str = filename[:filename.find('_')].upper()
+            operands: List[str] = filename[filename.find('_')+1:-4].split('_')
+
+            abs_filename: str = os.path.join(directory, filename)
+            operands_key: str = ', '.join(operands).upper()
+            if operator in self.signatures:
+                self.signatures[operator][operands_key] = abs_filename
+            else:
+                self.signatures[operator] = {operands_key: abs_filename}
 
 
     def check_coverage(self, annotations: List[Annotation]) -> bool:

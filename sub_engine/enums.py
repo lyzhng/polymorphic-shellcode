@@ -119,4 +119,3 @@ class Operand(enum.Enum):
     def __eq__(self, other):
         # pylint: disable=comparison-with-callable
         return self.value == other.value
-
