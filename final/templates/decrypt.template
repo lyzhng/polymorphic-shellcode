@@ -1,6 +1,6 @@
 #define_operand_type 28 = CONST
 #define_operand_type __x86.get_pc_thunk.bx = MEM
-#define_operand_type OFFSET_FLAT:_GLOBAL_OFFSET_TABLE_ = CONST
+#define_operand_type OFFSET FLAT:_GLOBAL_OFFSET_TABLE_ = CONST
 #define_operand_type DWORD PTR 64[esp] = MEM
 #define_operand_type EVP_CIPHER_CTX_new@PLT = MEM
 #define_operand_type .L9 = MEM
