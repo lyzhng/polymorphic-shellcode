@@ -34,5 +34,5 @@ class SubEngine():
         """
         operand_to_type_mapping, code = parser.preprocess(template_name)
         annotations: List[Annotations] = parser.parse(operand_to_type_mapping, code)
-        rewritten_program: str = self.compiler.apply_substitution(annotations)
+        rewritten_program: str = self.compiler.apply_substitution(annotations, debug=False)
         return '\n'.join([f'        {line}' for line in rewritten_program.split('\n')])

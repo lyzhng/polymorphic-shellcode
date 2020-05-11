@@ -104,7 +104,7 @@ class Compiler():
                 self.signatures[operator] = {operands_key: abs_filename}
 
 
-    def check_coverage(self, annotations: List[Annotation]) -> bool:
+    def check_coverage(self, annotations: List[Annotation], debug=True) -> bool:
         """
         Check to see if there is a signature for every command in the parse data and
         print any commands that are not covered.
@@ -117,7 +117,8 @@ class Compiler():
 
             if operator not in self.signatures or operands_key not in self.signatures[operator]:
                 complete_coverage = False
-                print(f'WARNING: Missing signature for {operator} {operands_key}!')
+                if debug:
+                    print(f'WARNING: Missing signature for {operator} {operands_key}!')
 
         return complete_coverage
 
@@ -148,16 +149,16 @@ class Compiler():
         return CodeTemplate(targets, template, is_original=True)
 
 
-    def apply_substitution(self, asm_annotations: List[Annotation]) -> str:
+    def apply_substitution(self, asm_annotations: List[Annotation], debug=True) -> str:
         """
         Rewrite the given program by substituting each instruction with valid substitutions.
         """
-        rewritten_program: List[SubstitutedCode] = self.substitute_first_pass(asm_annotations)
+        rewritten_program: List[SubstitutedCode] = self.substitute_first_pass(asm_annotations, debug)
         final_program: List[SubstitutedCode] = self.substitute_second_pass(rewritten_program)
         return final_program
 
 
-    def substitute_first_pass(self, asm_annotations: List[Annotation]) -> List[SubstitutedCode]:
+    def substitute_first_pass(self, asm_annotations: List[Annotation], debug=True) -> List[SubstitutedCode]:
         """
         Use the annotations provided by the parser and the library of valid substitutions to
         produce a list of SubstitutedCode which represent the rewritten program.
@@ -166,7 +167,7 @@ class Compiler():
 
         template: CodeTemplate
         for annotation in asm_annotations:
-            if self.check_coverage([annotation]):
+            if self.check_coverage([annotation], debug):
                 template = self.get_template(annotation)
             else:
                 template = self.get_default_template(annotation)
