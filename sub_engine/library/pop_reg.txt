@@ -7,8 +7,7 @@ pop eax
 $REG
 pop $REG
 push eax
-mov eax, al
-xor eax, al
+sub eax, ebx
 pop eax
 ----------
 $REG
