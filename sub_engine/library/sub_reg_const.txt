@@ -1,14 +1,9 @@
 $REG $CONST
-push $REG
-xor $REG, $REG
-test $REG, $CONST
-jnz const_not_zero
-mov $REG, $CONST
-jmp done
-const_not_zero:
-pop $REG
-sub $REG, $CONST
-done:
+push ebx
+mov ebx, $CONST
+neg ebx
+add $REG, ebx
+pop ebx
 ----------
 $REG $CONST
 neg $REG
