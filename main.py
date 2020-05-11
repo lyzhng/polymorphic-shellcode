@@ -81,7 +81,7 @@ def morph(shellcode: str):
                     key_part_two: str = key_str[62:]
                     if key_part_one.endswith('\\') and not key_part_one.endswith('\\\\'):
                         key_part_one = key_part_one[:-1]
-                    key_part_two = f'\\{key_part_two}'
+                        key_part_two = f'\\{key_part_two}'
                     final_program += f'        .ascii "{key_part_one}"\n'
                     final_program += f'        .ascii "{key_part_two}"\n'
                 elif case(_TEMPLATE_TARGET_REGEX):
