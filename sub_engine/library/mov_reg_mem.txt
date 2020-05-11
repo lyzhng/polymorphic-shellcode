@@ -2,7 +2,7 @@ $REG $MEM
 push $MEM
 pop $REG
 ----------
-$REG $MEM
+$REG1 $MEM
 push eax
 mov eax, $MEM
 mov $REG1, eax
