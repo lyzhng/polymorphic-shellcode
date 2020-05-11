@@ -14,5 +14,5 @@ pop eax
 $MEM $CONST
 push eax
 add $MEM, $CONST
-xor $eax, $eax
+xor eax, eax
 pop eax

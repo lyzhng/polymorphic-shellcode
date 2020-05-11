@@ -15,6 +15,6 @@ pop eax
 $REG $CONST
 push eax
 mov eax, $CONST
-add $eax, $REG
-mov $REG, $eax
+add eax, $REG
+mov $REG, eax
 pop eax
