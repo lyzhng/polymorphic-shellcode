@@ -6,7 +6,8 @@ shellcode so that it looks different, but exhibit the same behavior.
 
 import re
 import sys
-from typing import Dict
+from typing import Dict, List
+import argparse
 
 
 from crypto.encryption.encryptor import encrypt_sc
@@ -94,7 +95,31 @@ def morph(shellcode: str):
     return final_program
 
 
+def read_file(filename):
+    builder: List[str] = []
+    with open(filename, 'r') as f:
+        for line in f.readlines():
+            line = line.strip()
+            builder.append(line)
+    builder: str = ''.join(builder)
+    return builder
+
+
+def args_exist() -> bool:
+    return any(v for _, v in vars(args).items())
+
+
 if __name__ == '__main__':
-    shellcode: str = sys.argv[1]
-    
-    print(morph(shellcode))
+    parser = argparse.ArgumentParser(description='?')
+    parser.add_argument('-f', '--filename', help='?')
+    parser.add_argument('-s', '--stdin', help='?')
+    parser.add_argument('-d', '--debug', help='?')
+    args = parser.parse_args()
+    if args_exist():
+        if args.filename:
+            shellcode: str = read_file(args.filename)
+        if args.stdin:
+            shellcode: str = args.stdin        
+        print(morph(shellcode))
+    else:
+        parser.print_help()
