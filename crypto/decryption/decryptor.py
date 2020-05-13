@@ -73,10 +73,6 @@ def execute_program() -> None:
     os.system(f'./{_OUTPUT_EXE_PATH}')
 
 
-def extract_hex() -> None:
-    os.system(r"objdump -M intel -s output | cut -d ' ' -f-1,2,3,4,5,6,7 | tail -n +4 > hex.txt")
-
-
 def args_exist() -> bool:
     return any(v for _, v in vars(args).items())
 
@@ -96,6 +92,5 @@ if __name__ == '__main__':
             builder = fill_template(args.execute)
         write_file(builder)
         execute_program()
-        extract_hex()
     else:
         parser.print_help()
