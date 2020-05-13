@@ -1,9 +1,8 @@
 $REG $CONST
-push ebx
-mov ebx, $CONST
-neg ebx
-add $REG, ebx
-pop ebx
+push $REG
+mov $REG, $CONST
+sub [esp+4], $REG
+pop $REG
 ----------
 $REG $CONST
 neg $REG
@@ -12,7 +11,9 @@ neg $REG
 ----------
 $REG $CONST
 push eax
-mov eax, $CONST
-neg eax
-add $REG, eax
-pop eax
+mov eax, $REG
+sub eax, $CONST
+push eax
+mov eax, [esp+4]
+pop $REG
+add esp, 4

@@ -7,22 +7,21 @@ not $REG2
 ----------
 $REG1 $REG2
 push eax
-mov eax, $REG2
 and $REG1, $REG2
-or $REG1, $REG1
-and eax, $REG1
-or eax, eax
-and $REG1, eax
-pop eax
+push $REG1
+mov eax, [esp+4]
+xor eax, eax
+mov eax, [esp+4]
+pop $REG1
+sub esp, -4
 ----------
 $REG1 $REG2
-push eax
 push ebx
-mov eax, $REG1
-mov ebx, $REG2
-and eax, eax
-and ebx, ebx
-and eax, ebx
-mov $REG1, eax
-pop ebx
-pop eax
+and $REG1, $REG2
+push $REG1
+mov ebx, [esp+4]
+sub ebx, ebx
+inc ebx
+mov ebx, [esp+4]
+pop $REG1
+add esp, 4

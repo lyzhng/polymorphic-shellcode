@@ -1,19 +1,27 @@
 $REG $MEM
 push eax
-mov eax, $MEM
-add $REG, eax
-pop eax
+add $REG, $MEM
+push $REG
+mov eax, [esp+4]
+pop $REG
+add esp, 4
 ----------
 $REG $MEM
-push eax
-mov eax, $REG
-add eax, $MEM
-mov $REG, eax
-pop eax
+push ebx
+xor ebx, ebx
+mov ebx, [esp]
+add $REG, $MEM
+push $REG
+mov ebx, [esp]
+pop $REG
+add esp, 4
 ----------
 $REG $MEM
-push eax
-xor eax, eax
-add esp, eax
-mov $REG, $MEM
-pop eax
+push ecx
+sub ecx, ecx
+mov ecx, [esp]
+add $REG, $MEM
+push $REG
+mov ecx, [esp]
+pop $REG
+add esp, 4

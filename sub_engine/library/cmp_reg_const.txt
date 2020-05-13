@@ -1,20 +1,18 @@
 $REG $CONST
 push eax
-mov eax, $CONST
-cmp eax, $REG
+cmp $REG, $CONST
+mov eax, [esp]
 pop eax
 ----------
 $REG $CONST
-push eax
-mov eax, $REG
-cmp eax, $CONST
-pop eax
-----------
-$REG $CONST
-push eax
 push ebx
-mov ebx, $CONST
-mov eax, $REG
-cmp ebx, eax
+mov ebx, [esp]
+xor ebx, ebx
+mov ebx, [esp]
+cmp $REG, $CONST
 pop ebx
-pop eax
+----------
+$REG $CONST
+push ecx
+cmp $REG, $CONST
+pop ecx

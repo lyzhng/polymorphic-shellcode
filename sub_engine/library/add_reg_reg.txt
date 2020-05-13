@@ -1,16 +1,24 @@
 $REG1 $REG2
 push eax
-mov eax, $REG2
-add eax, $REG1
-mov $REG1, eax
-pop eax
+push ebx
+add $REG1, $REG2
+push $REG1
+mov ebx, [esp+4]
+mov eax, [esp+8]
+pop $REG1
+add esp, 8
 ----------
 $REG1 $REG2
-push eax
-xor eax, eax
-sub eax, $REG2
-sub $REG1, eax
-pop eax
+push ebx
+push ecx
+add $REG1, $REG2
+push $REG1
+mov ecx, [esp+4]
+mov ebx, [esp+8]
+xor ebx, ebx
+mov ebx, [esp+8]
+pop $REG1
+add esp, 8
 ----------
 $REG1 $REG2
 neg $REG2

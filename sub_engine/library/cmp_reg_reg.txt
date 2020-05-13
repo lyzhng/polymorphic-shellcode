@@ -1,20 +1,18 @@
 $REG1 $REG2
 push eax
-mov eax, $REG1
-cmp eax, $REG2
+cmp $REG1, $REG2
+mov eax, [esp]
 pop eax
 ----------
 $REG1 $REG2
-push eax
-mov eax, $REG2
-cmp eax, $REG1
-pop eax
+push ecx
+cmp $REG1, $REG2
+mov ecx, [esp]
+pop ecx
 ----------
 $REG1 $REG2
-push eax
 push ebx
-mov ebx, $REG1
-mov eax, $REG2
-cmp ebx, eax
+cmp $REG1, $REG2
+mov ebx, [esp]
+mov ebx, [esp]
 pop ebx
-pop eax

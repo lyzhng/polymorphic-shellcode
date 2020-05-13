@@ -3,17 +3,10 @@ push $REG2
 pop $REG1
 ----------
 $REG1 $REG2
-push eax
-mov eax, $REG2
-mov $REG1, eax
-pop eax
+push $REG2
+pop $REG1
 ----------
 $REG1 $REG2
-push eax
-push ebx
-mov ebx, $REG1
-xor ebx, ebx
-mov eax, $REG2
-mov $REG1, eax
-pop ebx
-pop eax
+push $REG2
+mov $REG1, $REG2
+pop $REG1

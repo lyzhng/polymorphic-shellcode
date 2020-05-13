@@ -1,24 +1,35 @@
 $REG $MEM
-push eax
-mov eax, $REG
-lea eax, $MEM
-mov $REG, eax
-pop eax
-----------
-$REG $MEM
-push eax
-push ebx
-mov eax, $REG
-mov ebx, $MEM
-xor ebx, ebx
-lea eax, $MEM
-mov $REG, eax
-pop ebx
-pop eax
-----------
-$REG $MEM
-push eax
-mov eax, $REG
-and eax, eax
+push ecx
+push edx
 lea $REG, $MEM
-pop eax
+push $REG
+mov edx, [esp+4]
+inc edx
+mov ecx, [esp+8]
+add ecx, edx
+mov edx, [esp+4]
+mov ecx, [esp+8]
+pop $REG
+add esp, 8
+----------
+$REG $MEM
+push ecx
+lea $REG, $MEM
+push $REG
+mov ecx, [esp+4]
+inc ecx
+sub ecx, ecx
+mov ecx, [esp+4]
+pop $REG
+sub esp, -4
+----------
+$REG $MEM
+push eax
+lea $REG, $MEM
+push $REG
+mov eax, [esp+4]
+and eax, eax
+or eax, eax
+mov eax, [esp+4]
+pop $REG
+sub esp, -4

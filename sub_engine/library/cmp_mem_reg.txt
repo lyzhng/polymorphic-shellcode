@@ -5,18 +5,18 @@ cmp $MEM, eax
 pop eax
 ----------
 $MEM $REG
-push eax
-mov eax, $MEM
-cmp eax, $REG
-pop eax
+push ebx
+mov ebx, $REG
+cmp $MEM, ebx
+pop ebx
 ----------
 $MEM $REG
 push eax
 push ebx
-mov eax, $MEM
-mov ebx, $REG
-cmp eax, ebx
 xor eax, eax
 add esp, eax
+mov ebx, $REG
+mov eax, $MEM
+cmp eax, ebx
 pop ebx
 pop eax

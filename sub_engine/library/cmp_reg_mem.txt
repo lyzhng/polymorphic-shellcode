@@ -1,20 +1,17 @@
 $REG $MEM
 push eax
-mov eax, $MEM
-cmp $REG, eax
+cmp $REG, $MEM
 pop eax
 ----------
 $REG $MEM
-push eax
-mov eax, $REG
-cmp $MEM, eax
-pop eax
-----------
-$REG $MEM
-push eax
 push ebx
-mov eax, $MEM
-mov ebx, $REG
-cmp eax, ebx
+cmp $REG, $MEM
+mov ebx, [esp]
 pop ebx
-pop eax
+----------
+$REG $MEM
+push ecx
+cmp $REG, $MEM
+mov ecx, [esp]
+mov ecx, [esp]
+pop ecx

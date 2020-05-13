@@ -2,18 +2,20 @@ $REG $MEM
 push $MEM
 pop $REG
 ----------
-$REG1 $MEM
-push eax
-mov eax, $MEM
-mov $REG1, eax
-pop eax
-----------
 $REG $MEM
 push eax
+push $MEM
+mov $REG, [esp]
+push $REG
+mov eax, [esp+12]
+pop $REG
+add esp, 8
+----------
+$REG $MEM
 push ebx
-mov ebx, $REG
-xor ebx, ebx
-mov eax, $MEM
-mov $REG, eax
-pop ebx
-pop eax
+push $MEM
+mov $REG, [esp]
+push $REG
+mov eax, [esp+12]
+pop $REG
+sub esp, -8

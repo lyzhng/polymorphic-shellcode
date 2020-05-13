@@ -1,27 +1,27 @@
 $REG $CONST
-not $REG
-not $CONST
-or $REG, $CONST
-not $REG
+push eax
+and $REG, $CONST
+push $REG
+mov eax, [esp+4]
+pop $REG
+add esp, 4
 ----------
 $REG $CONST
-push eax
-mov eax, $CONST
-and $REG, eax
-or $REG, $REG 
-and eax, $REG
-or eax, eax
-and $REG, eax
-pop eax
-----------
-$REG $CONST
-push eax
 push ebx
-mov eax, $REG
-mov ebx, $CONST
-and eax, eax
-and ebx, ebx
-and eax, ebx
-mov $REG, eax
-pop ebx
-pop eax
+and $REG, $CONST
+push $REG
+mov ebx, [esp+4]
+xor ebx, ebx
+mov ebx, [esp+4]
+pop $REG
+add esp, 4
+----------
+$REG $CONST
+push ecx
+and $REG, $CONST
+push $REG
+mov ecx, [esp+4]
+sub ecx, ecx
+mov ecx, [esp+4]
+pop $REG
+add esp, 4
