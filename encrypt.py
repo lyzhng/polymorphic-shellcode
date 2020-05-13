@@ -15,10 +15,6 @@ def encrypt(sc: str):
     groups = [f'{pad(sc[i:i+8], 8, "90")}' for i in range(0, len(sc), 8)]
     encrypted_sc = []
 
-    print('Encrypting...')
-    print(f'Key is {key}')
-    print(f'SC to encrypt: {sc}')
-
     for i, group in enumerate(groups):
         previous = f'{hex(int(previous, 16) ^ int(group, 16))[2:]:0>8}'
         encrypted_sc.append(previous)
