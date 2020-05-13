@@ -24,17 +24,6 @@ _TEMPLATE_TARGET_REGEX = re.compile(r'[\t ]*{{ ([\w\d_]+) }}[\t ]*')
 _COMMENT_REGEX = re.compile(r'; .+')
 
 
-hex_to_ascii_mapping: Dict[int, str] = {
-    0x0: '0',
-    0x9: '\\t',
-    0xa: '\\n',
-    0xc: '\\f',
-    0xd: '\\r', 
-    0x22: '\\"',
-    0x5c: '\\\\',
-}
-
-
 def shellcodify(bytestring: bytes) -> str:
     hexstring = bytestring.hex()
     hexes = [hexstring[i:i+2] for i in range(0, len(hexstring), 2)]
