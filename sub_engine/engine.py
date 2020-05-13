@@ -22,8 +22,9 @@ class SubEngine():
     template.
     """
 
-    def __init__(self, signature_directory: str = _DEFAULT_SIGNATURE_DIRECTORY):
-        self.compiler = Compiler()
+    def __init__(self, signature_directory: str = _DEFAULT_SIGNATURE_DIRECTORY, debug: bool = True):
+        self.compiler: Compiler = Compiler()
+        self.debug: bool = debug
         self.compiler.discover_signatures(signature_directory)
 
 
@@ -34,5 +35,5 @@ class SubEngine():
         """
         operand_to_type_mapping, code = parser.preprocess(template_name)
         annotations: List[Annotations] = parser.parse(operand_to_type_mapping, code)
-        rewritten_program: str = self.compiler.apply_substitution(annotations, debug=False)
+        rewritten_program: str = self.compiler.apply_substitution(annotations, self.debug)
         return '\n'.join([f'        {line}' for line in rewritten_program.split('\n')])
