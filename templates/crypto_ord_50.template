@@ -1,0 +1,12 @@
+#define_operand_type crypto_ord_51 = MEM
+
+#define_operand_type BYTE PTR -4[ebp] = MEM
+
+#define_operand_type 50 = CONST
+#define_operand_type 2 = CONST
+
+    cmp BYTE PTR -4[ebp], 50
+    jne crypto_ord_51
+    mov eax, 2
+    leave
+    ret

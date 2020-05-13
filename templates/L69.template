@@ -1,0 +1,12 @@
+#define_operand_type -16[ebp] = MEM
+#define_operand_type -4[ecx] = MEM
+
+
+    lea esp, -16[ebp]
+    pop ecx
+    pop ebx
+    pop esi
+    pop edi
+    pop ebp
+    lea esp, -4[ecx]
+    ret

@@ -1,0 +1,11 @@
+#define_operand_type DWORD PTR 8[ebp] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+
+#define_operand_type 4 = CONST
+#define_operand_type 1 = CONST
+
+
+    mov eax, DWORD PTR 8[ebp]
+    shr eax, 4
+    mov DWORD PTR 8[ebp], eax
+    sub DWORD PTR -8[ebp], 1

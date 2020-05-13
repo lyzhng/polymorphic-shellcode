@@ -1,0 +1,9 @@
+#define_operand_type crypto_dec_to_hex_calculate_remainder_and_remainder_less_than_10 = MEM
+#define_operand_type crypto_dec_to_hex_check_if_done = MEM
+
+#define_operand_type DWORD PTR 8[ebp] = MEM
+
+    xor eax, eax
+    cmp DWORD PTR 8[ebp], eax
+    jne crypto_dec_to_hex_calculate_remainder_and_remainder_less_than_10
+    jmp crypto_dec_to_hex_check_if_done

@@ -1,0 +1,9 @@
+#define_operand_type L67 = MEM
+#define_operand_type num_chunks_lbl_three = MEM
+
+
+    pop eax
+    mov eax, [eax]
+    cmp edx, eax
+    jb L67
+    jmp num_chunks_lbl_three

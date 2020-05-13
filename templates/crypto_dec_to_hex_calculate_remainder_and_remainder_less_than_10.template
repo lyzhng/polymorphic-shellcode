@@ -1,0 +1,26 @@
+#define_operand_type crypto_dec_to_hex_remainder_greater_than_9 = MEM
+#define_operand_type crypto_dec_to_hex_calculate_new_quotient = MEM
+
+#define_operand_type DWORD PTR 8[ebp] = MEM
+#define_operand_type DWORD PTR -4[ebp] = MEM
+#define_operand_type 48[eax] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+#define_operand_type DWORD PTR 12[ebp] = MEM
+
+#define_operand_type 15 = CONST
+#define_operand_type 9 = CONST
+
+
+    mov eax, DWORD PTR 8[ebp]
+    and eax, 15
+    mov DWORD PTR -4[ebp], eax
+    cmp DWORD PTR -4[ebp], 9
+    ja crypto_dec_to_hex_remainder_greater_than_9
+    mov eax, DWORD PTR -4[ebp]
+    lea ecx, 48[eax]
+    mov edx, DWORD PTR -8[ebp]
+    mov eax, DWORD PTR 12[ebp]
+    add eax, edx
+    mov edx, ecx
+    mov BYTE PTR [eax], dl
+    jmp crypto_dec_to_hex_calculate_new_quotient

@@ -1,0 +1,13 @@
+#define_operand_type DWORD PTR -4[ebp] = MEM
+#define_operand_type 55[eax] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+#define_operand_type DWORD PTR 12[ebp] = MEM
+
+
+    mov eax, DWORD PTR -4[ebp]
+    lea ecx, 55[eax]
+    mov edx, DWORD PTR -8[ebp]
+    mov eax, DWORD PTR 12[ebp]
+    add eax, edx
+    mov edx, ecx
+    mov BYTE PTR [eax], dl

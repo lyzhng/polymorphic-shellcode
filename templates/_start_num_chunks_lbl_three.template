@@ -1,0 +1,24 @@
+#define_operand_type L69 = MEM
+
+#define_operand_type DWORD PTR -52[ebp] = MEM
+#define_operand_type DWORD PTR -48[ebp] = MEM
+#define_operand_type DWORD PTR -28[ebp] = MEM
+#define_operand_type DWORD PTR gs:20 = MEM
+
+#define_operand_type 0 = CONST
+
+
+    pop eax
+    mov eax, [eax]
+    lea edx, [eax*4]
+    mov eax, DWORD PTR -52[ebp]
+    mov BYTE PTR [eax+edx], 0
+    mov eax, DWORD PTR -52[ebp]
+    mov DWORD PTR -48[ebp], eax
+    mov eax, DWORD PTR -48[ebp]
+    call eax
+    xor eax, eax
+    mov esp, edi
+    mov esi, DWORD PTR -28[ebp]
+    xor esi, DWORD PTR gs:20
+    je L69

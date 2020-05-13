@@ -1,0 +1,19 @@
+#define_operand_type L65 = MEM
+
+#define_operand_type DWORD PTR -60[ebp] = MEM
+#define_operand_type DWORD PTR -64[ebp] = MEM
+#define_operand_type DWORD PTR -44[ebp] = MEM
+#define_operand_type DWORD PTR -68[ebp] = MEM
+
+#define_operand_type 2 = CONST
+#define_operand_type 0 = CONST
+
+
+    pop edx
+    add eax, edx
+    mov DWORD PTR -60[ebp], eax
+    mov eax, DWORD PTR -64[ebp]
+    sal eax, 2
+    mov DWORD PTR -44[ebp], eax
+    mov DWORD PTR -68[ebp], 0
+    jmp L65

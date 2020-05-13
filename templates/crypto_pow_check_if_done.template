@@ -1,0 +1,13 @@
+#define_operand_type crypto_pow_mult_base = MEM
+
+#define_operand_type DWORD PTR -4[ebp] = MEM
+#define_operand_type DWORD PTR 12[ebp] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+
+
+    mov eax, DWORD PTR -4[ebp]
+    cmp eax, DWORD PTR 12[ebp]
+    jl crypto_pow_mult_base
+    mov eax, DWORD PTR -8[ebp]
+    leave
+    ret

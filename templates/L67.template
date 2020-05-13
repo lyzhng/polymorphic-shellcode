@@ -1,0 +1,12 @@
+#define_operand_type encrypted_sc_lbl_one = MEM
+
+#define_operand_type DWORD PTR -64[ebp] = MEM
+
+#define_operand_type 3 = CONST
+
+
+    mov edx, DWORD PTR -64[ebp]
+    mov eax, edx
+    sal eax, 3
+    add eax, edx
+    jmp encrypted_sc_lbl_one

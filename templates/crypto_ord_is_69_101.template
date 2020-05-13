@@ -1,0 +1,7 @@
+#define_operand_type 14 = CONST
+
+
+    mov eax, 14
+    leave
+    ret
+

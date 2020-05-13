@@ -1,0 +1,7 @@
+#define_operand_type num_chunks_lbl_one = MEM
+
+#define_operand_type DWORD PTR -60[ebp] = MEM
+
+    pop eax
+    mov DWORD PTR -60[ebp], eax
+    jmp num_chunks_lbl_one

@@ -1,0 +1,48 @@
+#define_operand_type crypto_ord = MEM
+
+#define_operand_type -37[ebp] = MEM
+#define_operand_type DWORD PTR -68[ebp] = MEM
+#define_operand_type BYTE PTR -37[ebp+eax] = MEM
+#define_operand_type DWORD PTR -44[ebp] = MEM
+#define_operand_type DWORD PTR -52[ebp] = MEM
+
+#define_operand_type 12 = CONST
+#define_operand_type 16 = CONST
+#define_operand_type 4 = CONST
+#define_operand_type 1 = CONST
+#define_operand_type 31 = CONST
+#define_operand_type 2 = CONST
+
+
+    lea edx, -37[ebp]
+    mov eax, DWORD PTR -68[ebp]
+    add eax, edx
+    movzx eax, BYTE PTR [eax]
+    movsx eax, al
+    sub esp, 12
+    push eax
+    call crypto_ord
+    add esp, 16
+    sal eax, 4
+    mov esi, eax
+    mov eax, DWORD PTR -68[ebp]
+    add eax, 1
+    movzx eax, BYTE PTR -37[ebp+eax]
+    movsx eax, al
+    sub esp, 12
+    push eax
+    call crypto_ord
+    add esp, 16
+    mov ecx, eax
+    mov eax, DWORD PTR -68[ebp]
+    mov edx, eax
+    shr edx, 31
+    add eax, edx
+    sar eax
+    mov edx, eax
+    mov eax, DWORD PTR -44[ebp]
+    add edx, eax
+    add ecx, esi
+    mov eax, DWORD PTR -52[ebp]
+    mov BYTE PTR [eax+edx], cl
+    add DWORD PTR -68[ebp], 2

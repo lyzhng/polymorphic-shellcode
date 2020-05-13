@@ -1,0 +1,23 @@
+#define_operand_type crypto_ord_49 = MEM
+
+#define_operand_type DWORD PTR 8[ebp] = MEM
+#define_operand_type BYTE PTR -4[ebp] = MEM
+
+#define_operand_type 4 = CONST
+#define_operand_type 48 = CONST
+
+    ; set up the stack frame
+    push ebp
+    mov ebp, esp
+    sub esp, 4
+    
+    ; load up the hexadecimal char to -4[ebp]
+    mov eax, DWORD PTR 8[ebp]
+    mov BYTE PTR -4[ebp], al
+    
+    ; check if it's equal to '0'
+    cmp BYTE PTR -4[ebp], 48
+    jne crypto_ord_49
+    xor eax, eax
+    leave
+    ret

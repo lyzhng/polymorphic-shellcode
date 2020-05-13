@@ -1,0 +1,5 @@
+#define_operand_type DWORD PTR -4[ebp] = MEM
+
+#define_operand_type 1 = CONST
+
+    add DWORD PTR -4[ebp], 1

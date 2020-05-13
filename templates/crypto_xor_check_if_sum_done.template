@@ -1,0 +1,28 @@
+#define_operand_type crypto_xor_sum_both_strings = MEM
+#define_operand_type crypto_dec_to_hex = MEM
+
+#define_operand_type DWORD PTR -12[ebp] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+#define_operand_type DWORD PTR -20[ebp] = MEM
+#define_operand_type DWORD PTR -16[ebp] = MEM
+#define_operand_type DWORD PTR 16[ebp] = MEM
+#define_operand_type DWORD PTR -4[ebp] = MEM
+
+#define_operand_type 12 = CONST
+
+
+    mov eax, DWORD PTR -12[ebp]
+    cmp eax, DWORD PTR -8[ebp]
+    jl crypto_xor_sum_both_strings
+    mov edx, DWORD PTR -8[ebp]
+    mov eax, DWORD PTR -20[ebp]
+    xor eax, DWORD PTR -16[ebp]
+    push edx
+    push DWORD PTR 16[ebp]
+    push eax
+    call crypto_dec_to_hex
+    add esp, 12
+    nop
+    mov ebx, DWORD PTR -4[ebp]
+    leave
+    ret

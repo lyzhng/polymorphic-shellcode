@@ -1,0 +1,18 @@
+#define_operand_type crypto_dec_to_hex_check_if_quotient_is_zero = MEM
+
+#define_operand_type DWORD PTR 16[ebp] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+
+#define_operand_type 16 = CONST
+#define_operand_type 1 = CONST
+
+
+    ; set up the stack frame
+    push ebp
+    mov ebp, esp
+    sub esp, 16
+
+    mov eax, DWORD PTR 16[ebp]
+    sub eax, 1
+    mov DWORD PTR -8[ebp], eax
+    jmp crypto_dec_to_hex_check_if_quotient_is_zero

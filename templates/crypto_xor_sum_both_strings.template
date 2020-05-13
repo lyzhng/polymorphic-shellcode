@@ -1,0 +1,56 @@
+#define_operand_type crypto_ord = MEM
+#define_operand_type crypto_pow = MEM
+
+#define_operand_type DWORD PTR -12[ebp] = MEM
+#define_operand_type DWORD PTR 8[ebp] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+#define_operand_type DWORD PTR -20[ebp] = MEM
+#define_operand_type DWORD PTR 12[ebp] = MEM
+#define_operand_type 1[eax] = MEM
+#define_operand_type DWORD PTR -16[ebp] = MEM
+
+#define_operand_type 4 = CONST
+#define_operand_type 16 = CONST
+#define_operand_type 8 = CONST
+#define_operand_type 1 = CONST
+
+
+    mov edx, DWORD PTR -12[ebp]
+    mov eax, DWORD PTR 8[ebp]
+    add eax, edx
+    movzx eax, BYTE PTR [eax]
+    movsx eax, al
+    push eax
+    call crypto_ord
+    add esp, 4
+    mov ebx, eax
+    mov eax, DWORD PTR -12[ebp]
+    lea edx, 1[eax]
+    mov eax, DWORD PTR -8[ebp]
+    sub eax, edx
+    push eax
+    push 16
+    call crypto_pow
+    add esp, 8
+    imul eax, ebx
+    add DWORD PTR -20[ebp], eax
+    mov edx, DWORD PTR -12[ebp]
+    mov eax, DWORD PTR 12[ebp]
+    add eax, edx
+    movzx eax, BYTE PTR [eax]
+    movsx eax, al
+    push eax
+    call crypto_ord
+    add esp, 4
+    mov ebx, eax
+    mov eax, DWORD PTR -12[ebp]
+    lea edx, 1[eax]
+    mov eax, DWORD PTR -8[ebp]
+    sub eax, edx
+    push eax
+    push 16
+    call crypto_pow
+    add esp, 8
+    imul eax, ebx
+    add DWORD PTR -16[ebp], eax
+    add DWORD PTR -12[ebp], 1

@@ -1,0 +1,15 @@
+#define_operand_type crypto_strlen_inc_length_counter = MEM
+
+#define_operand_type DWORD PTR -4[ebp] = MEM
+#define_operand_type DWORD PTR 8[ebp] = MEM
+
+
+    mov edx, DWORD PTR -4[ebp]
+    mov eax, DWORD PTR 8[ebp]
+    add eax, edx
+    movzx eax, BYTE PTR [eax]
+    test al, al
+    jne crypto_strlen_inc_length_counter
+    mov eax, DWORD PTR -4[ebp]
+    leave
+    ret

@@ -1,0 +1,14 @@
+#define_operand_type crypto_ord_is_65_97 = MEM
+#define_operand_type crypto_ord_66_98 = MEM
+
+#define_operand_type BYTE PTR -4[ebp] = MEM
+
+#define_operand_type 65 = CONST
+#define_operand_type 97 = CONST
+
+
+    cmp BYTE PTR -4[ebp], 65 
+    je crypto_ord_is_65_97
+    ; check if it's equal to 'a'
+    cmp BYTE PTR -4[ebp], 97
+    jne crypto_ord_66_98

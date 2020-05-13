@@ -1,0 +1,12 @@
+#define_operand_type L66 = MEM
+
+#define_operand_type DWORD PTR -68[ebp] = MEM
+#define_operand_type DWORD PTR -64[ebp] = MEM
+
+#define_operand_type 7 = CONST
+#define_operand_type 1 = CONST
+
+
+    cmp DWORD PTR -68[ebp], 7
+    jle L66
+    add DWORD PTR -64[ebp], 1

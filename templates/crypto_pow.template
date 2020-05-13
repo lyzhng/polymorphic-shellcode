@@ -1,0 +1,19 @@
+#define_operand_type crypto_pow_check_if_done = MEM
+
+#define_operand_type DWORD PTR -4[ebp] = MEM
+#define_operand_type DWORD PTR -8[ebp] = MEM
+
+#define_operand_type 16 = CONST
+
+
+    ; set up the stack frame
+    push ebp
+    mov ebp, esp
+    sub esp, 16
+
+    ; store the result in -8[ebp] and the loop counter in -4[ebp]
+    xor eax, eax
+    mov DWORD PTR -4[ebp], eax
+    inc eax
+    mov DWORD PTR -8[ebp], eax
+    jmp crypto_pow_check_if_done

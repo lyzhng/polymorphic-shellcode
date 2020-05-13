@@ -1,0 +1,26 @@
+#define_operand_type crypto_xor = MEM
+#define_operand_type encrypted_sc_lbl_two = MEM
+
+#define_operand_type -37[ebp] = MEM
+#define_operand_type DWORD PTR -60[ebp] = MEM
+#define_operand_type DWORD PTR -64[ebp] = MEM
+
+#define_operand_type 4 = CONST
+#define_operand_type 16 = CONST
+#define_operand_type 3 = CONST
+
+
+    pop edx
+    add edx, eax
+    sub esp, 4
+    lea eax, -37[ebp]
+    push eax
+    push edx
+    push DWORD PTR -60[ebp]
+    call crypto_xor
+    add esp, 16
+    mov edx, DWORD PTR -64[ebp]
+    mov eax, edx
+    sal eax, 3
+    add eax, edx
+    jmp encrypted_sc_lbl_two
