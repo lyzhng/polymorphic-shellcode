@@ -11,7 +11,9 @@ import argparse
 
 
 from encrypt import encrypt
+from crypto.encryption.encryptor import shellcodify
 from sub_engine.engine import SubEngine
+from substitution.substitution_transpiler import asm_to_shellcode
 from utils import RegexSwitch
 
 
@@ -19,6 +21,8 @@ _ENCRYPTED_SC_TARGET_REGEX = re.compile(r'{{ ENCRYPTED_SC }}')
 _NUM_CHUNKS_TARGET_REGEX = re.compile(r'{{ NUM_CHUNKS }}')
 _KEY_TARGET_REGEX = re.compile(r'{{ KEY }}')
 _TEMPLATE_TARGET_REGEX = re.compile(r'[\t ]*{{ ([\w\d_]+) }}[\t ]*')
+
+_COMMENT_REGEX = re.compile(r'; .+')
 
 
 hex_to_ascii_mapping: Dict[int, str] = {
@@ -53,7 +57,9 @@ def morph(shellcode: str):
     with open('template.s') as template:
         for line in template:
             with RegexSwitch(line.strip()) as case:
-                if case(_ENCRYPTED_SC_TARGET_REGEX):
+                if case(_COMMENT_REGEX):
+                    continue
+                elif case(_ENCRYPTED_SC_TARGET_REGEX):
                     for chunk in encrypted_sc:
                         final_program += f'    .string "{chunk}"\n'
                 elif case(_NUM_CHUNKS_TARGET_REGEX):
@@ -95,6 +101,6 @@ if __name__ == '__main__':
             shellcode: str = read_file(args.filename)
         if args.stdin:
             shellcode: str = args.stdin        
-        print(morph(shellcode))
+        print(shellcodify(asm_to_shellcode(morph(shellcode))))
     else:
         parser.print_help()
