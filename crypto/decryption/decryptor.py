@@ -41,6 +41,10 @@ def to_char_array(sc: bytes) -> str:
     return '{' + ','.join(hex_arr) + '}'
 
 
+def to_hex_values(sc: str) -> str:
+    return ''.join([f'\\x{sc[i:i+2]}' for i in range(0, len(sc), 2)])
+
+
 def fill_template(sc: bytes) -> str:
     builder: List[str] = []
     file_to_read: str = _DECRYPTOR_TEMPLATE_PATH if args.plaintext or args.decrypt else _EXECUTOR_TEMPLATE_PATH
@@ -57,7 +61,8 @@ def fill_template(sc: bytes) -> str:
                 char_arr = to_char_array(iv)
                 builder.append(f'unsigned char iv[] = {char_arr};{_NL}')
             elif args.execute and line.rstrip() == _EXECUTOR_TARGET:
-                builder.append(f'unsigned char code[] = "{sc}";{_NL}')
+                hex_values = to_hex_values(sc)
+                builder.append(f'unsigned char code[] = "{hex_values}";{_NL}')
             else:
                 builder.append(line)
     return ''.join(builder)
@@ -69,7 +74,7 @@ def write_file(builder: str) -> None:
 
 
 def execute_program() -> None:
-    os.system(f'gcc {_OUTPUT_PATH} -g -o {_OUTPUT_EXE_PATH} -lssl3 -lcrypto -fno-stack-protector -z execstack -m32')
+    os.system(f'gcc {_OUTPUT_PATH} -g -o {_OUTPUT_EXE_PATH} -fno-stack-protector -z execstack -m32')
     os.system(f'./{_OUTPUT_EXE_PATH}')
 
 

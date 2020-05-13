@@ -11,7 +11,6 @@ import argparse
 
 
 from encrypt import encrypt
-from crypto.encryption.encryptor import shellcodify
 from sub_engine.engine import SubEngine
 from substitution.substitution_transpiler import asm_to_shellcode
 from utils import RegexSwitch
@@ -34,6 +33,12 @@ hex_to_ascii_mapping: Dict[int, str] = {
     0x22: '\\"',
     0x5c: '\\\\',
 }
+
+
+def shellcodify(bytestring: bytes) -> str:
+    hexstring = bytestring.hex()
+    hexes = [hexstring[i:i+2] for i in range(0, len(hexstring), 2)]
+    return ''.join(hexes)
 
 
 def morph(shellcode: str, debug: bool = False):
