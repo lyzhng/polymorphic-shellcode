@@ -421,22 +421,8 @@ crypto_dec_to_hex_check_if_done:
 
 crypto_xor:
     ; implement xor of two strings
+    {{ crypto_xor }}
 
-    ; set up the stack frame
-    push ebp
-    mov ebp, esp
-    push ebx
-    sub esp, 16
-
-    push DWORD PTR 8[ebp]
-    call crypto_strlen
-    add esp, 4
-    mov DWORD PTR -8[ebp], eax
-    xor eax, eax
-    mov DWORD PTR -20[ebp], eax
-    mov DWORD PTR -16[ebp], eax
-    mov DWORD PTR -12[ebp], eax
-    jmp crypto_xor_check_if_sum_done
 crypto_xor_sum_both_strings:
     mov edx, DWORD PTR -12[ebp]
     mov eax, DWORD PTR 8[ebp]
