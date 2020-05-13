@@ -36,21 +36,13 @@ hex_to_ascii_mapping: Dict[int, str] = {
 }
 
 
-def to_hexstring(sc: str) -> str:
-    """
-    Convert each occurrence of \\x[a-fA-F0-9]{2} to [a-fA-F0-9]{2}.
-    """
-    return ''.join([sc[i+2:i+4] for i in range(0, len(sc), 4)])
-
-
-def morph(shellcode: str):
+def morph(shellcode: str, debug: bool = False):
     """
     Change the given shellcode so that it looks different, but still
     exhibit the same behavior.
     """
-    sub_engine = SubEngine()
-    shellcode_bytes: bytes = to_hexstring(shellcode)
-    key, encrypted_sc = encrypt(shellcode_bytes)
+    sub_engine = SubEngine(debug=debug)
+    key, encrypted_sc = encrypt(shellcode)
     
 
     final_program: str = ''
@@ -101,6 +93,6 @@ if __name__ == '__main__':
             shellcode: str = read_file(args.filename)
         if args.stdin:
             shellcode: str = args.stdin        
-        print(shellcodify(asm_to_shellcode(morph(shellcode))))
+        print(shellcodify(asm_to_shellcode(morph(shellcode, debug=args.debug))))
     else:
         parser.print_help()
