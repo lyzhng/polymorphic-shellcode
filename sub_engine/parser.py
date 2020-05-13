@@ -18,6 +18,7 @@ _MEM = re.compile(r'((BYTE|WORD|DWORD|QWORD) PTR )?(([CDEFGS]S:((\[.+\])|(0x[a-f
 _REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|eip|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl|si|di|sp|bp|ip') #pylint: disable=line-too-long
 
 _PREPROCESS_DEFINE = re.compile(r'#define_operand_type (.+)')
+_PREPROCESS_COMMENT = re.compile(r'[ \t]*; .+')
 
 
 class OperandNode(NamedTuple):
@@ -77,20 +78,23 @@ def preprocess(template_filename: str) -> Tuple[Dict[str, Operand], List[str]]:
     
     with open(template_filename) as template:
         for line in template:
-            match = _PREPROCESS_DEFINE.fullmatch(line.strip())
-            if match is not None:
-                operand, operand_type = map(str.strip, match.group(1).split('='))
-                with Switch(operand_type) as case:
-                    if case('CONST'):
-                        operand_to_type_mapping[operand] = Operand.CONST
-                    elif case('MEM'):
-                        operand_to_type_mapping[operand] = Operand.MEM
-                    elif case('REG'):
-                        operand_to_type_mapping[operand] = Operand.REG
-                    else:
-                        raise TypeError(f'{operand_type} is not supported by the parser.')
-            elif line.strip() != '':
-                code.append(line)
+            with RegexSwitch(line.strip()) as case:
+                if case(_PREPROCESS_DEFINE):
+                    match = _PREPROCESS_DEFINE.fullmatch(line.strip())
+                    operand, operand_type = map(str.strip, match.group(1).split('='))
+                    with Switch(operand_type) as case:
+                        if case('CONST'):
+                            operand_to_type_mapping[operand] = Operand.CONST
+                        elif case('MEM'):
+                            operand_to_type_mapping[operand] = Operand.MEM
+                        elif case('REG'):
+                            operand_to_type_mapping[operand] = Operand.REG
+                        else:
+                            raise TypeError(f'{operand_type} is not supported by the parser.')
+                elif case(_PREPROCESS_COMMENT):
+                    continue
+                elif line.strip() != '':
+                    code.append(line)
 
     return (operand_to_type_mapping, code)
 
