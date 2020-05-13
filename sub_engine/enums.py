@@ -91,6 +91,11 @@ class Operator(enum.Enum):
     INS = 'ins'
     REP = 'rep'
     MOVZX = 'movzx'
+    MOVSX = 'movsx'
+    LEAVE = 'leave'
+    SAL = 'sal'
+    SAR = 'sar'
+    DIV = 'div'
 
     LABEL = 'a label'
 
