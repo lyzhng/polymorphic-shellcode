@@ -13,7 +13,7 @@ if MODULE_DIR_NAME not in sys.path:
     sys.path.insert(0, MODULE_DIR_NAME)
 
 
-from typing import List
+from typing import List, Union
 import argparse
 
 
@@ -31,40 +31,46 @@ _OUTPUT_EXE_PATH: str = _OUTPUT_PATH[:_OUTPUT_PATH.index('.')]
 _NL: str = '\n'
 
 
-def to_hexstring(sc: str) -> str:
-    return ''.join([sc[i+2:i+4] for i in range(0, len(sc), 4)])
-
-
-def to_char_array(sc: bytes) -> str:
-    hexes = encryptor.shellcodify(sc)
-    hex_arr = ['0' + hexes[i+1:i+4] for i in range(0, len(hexes), 4)]
+""" Converts from a hexstring/bytestring to a char array """
+def to_char_array(sc: Union[str, bytes]) -> str:
+    hexstring: str = sc.hex() if type(sc) == bytes else sc
+    hexes: List[str] = [hexstring[i:i+2] for i in range(0, len(hexstring), 2)]
+    with_hex_prefix = map(lambda v: '0x' + v, hexes)
+    hex_arr: List[str] = list(with_hex_prefix)
     return '{' + ','.join(hex_arr) + '}'
 
 
-def to_hex_values(sc: str) -> str:
-    return ''.join([f'\\x{sc[i:i+2]}' for i in range(0, len(sc), 2)])
-
-
-def fill_template(sc: bytes) -> str:
+def fill_template(sc: Union[bytes, str]) -> str:
     builder: List[str] = []
-    file_to_read: str = _DECRYPTOR_TEMPLATE_PATH if args.plaintext or args.decrypt else _EXECUTOR_TEMPLATE_PATH
+    file_to_read: str = _DECRYPTOR_TEMPLATE_PATH if args.plaintext else _EXECUTOR_TEMPLATE_PATH
     with open(file_to_read, 'r') as f:
         for line in f:
             line = line.lstrip()
-            if (args.decrypt or args.plaintext) and line.rstrip() == _DECRYPTOR_TARGET:
+            if args.plaintext and line.rstrip() == _DECRYPTOR_TARGET:
                 char_arr = to_char_array(sc)
+                print(char_arr)
                 builder.append(f'unsigned char encrypted_sc[] = {char_arr};{_NL}')
-            elif (args.decrypt or args.plaintext) and line.rstrip() == _KEY_TARGET:
+            elif args.plaintext and line.rstrip() == _KEY_TARGET:
                 char_arr = to_char_array(key)
                 builder.append(f'const static unsigned char key[] = {char_arr};{_NL}')
-            elif (args.decrypt or args.plaintext) and line.rstrip() == _IV_TARGET:
+            elif args.plaintext and line.rstrip() == _IV_TARGET:
                 char_arr = to_char_array(iv)
                 builder.append(f'unsigned char iv[] = {char_arr};{_NL}')
             elif args.execute and line.rstrip() == _EXECUTOR_TARGET:
-                hex_values = to_hex_values(sc)
-                builder.append(f'unsigned char code[] = "{hex_values}";{_NL}')
+                char_arr = to_char_array(sc)
+                print(char_arr)
+                builder.append(f'unsigned char code[] = {char_arr};{_NL}')
             else:
                 builder.append(line)
+    return ''.join(builder)
+
+
+def read_file(filename: str) -> str:
+    builder: str = []
+    with open(filename, 'r') as f:
+        for line in f.readlines():
+            line = line.strip()
+            builder.append(line)
     return ''.join(builder)
 
 
@@ -74,7 +80,7 @@ def write_file(builder: str) -> None:
 
 
 def execute_program() -> None:
-    os.system(f'gcc {_OUTPUT_PATH} -g -o {_OUTPUT_EXE_PATH} -fno-stack-protector -z execstack -m32')
+    os.system(f'gcc {_OUTPUT_PATH} -g -o {_OUTPUT_EXE_PATH} -fno-stack-protector -z execstack -m32 -lssl3 -lcrypto ')
     os.system(f'./{_OUTPUT_EXE_PATH}')
 
 
@@ -84,17 +90,19 @@ def args_exist() -> bool:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate a C program by reading in a template and filling in the shellcode. After generating, the program gets compiled and is executed.')
-    parser.add_argument('-d', '--decrypt', help='Generate a C program that decrypts the shellcode and then executes it')
     parser.add_argument('-x', '--execute', help='Generate a C program that executes shellcode')
     parser.add_argument('-p', '--plaintext', help='Encrypt plaintext shellcode, encrypt within this file, and then decrypt with a generated C program')
+    parser.add_argument('-f', '--file', help='Read from a file, encrypt within this file, and then decrypt within template', required=False, action='store_true')
     args = parser.parse_args()
     if args_exist():
         if args.plaintext:
-            hexstring = to_hexstring(args.plaintext)
-            key, iv, encrypted_sc = encryptor.encrypt_sc(bytes.fromhex(hexstring))
-            builder = fill_template(encrypted_sc)
-        if args.execute:
-            builder = fill_template(args.execute)
+            key, iv, encrypted_sc = encryptor.encrypt_sc(bytes.fromhex(args.plaintext))
+            builder: str = fill_template(encrypted_sc)
+        if args.execute and not args.file:
+            builder: str = fill_template(args.execute)
+        if args.execute and args.file:
+            builder: str = read_file(args.execute)
+            builder: str = fill_template(builder)
         write_file(builder)
         execute_program()
     else:
