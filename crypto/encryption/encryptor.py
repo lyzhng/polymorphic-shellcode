@@ -27,7 +27,7 @@ cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
 def shellcodify(bytestring: bytes) -> str:
     hexstring = bytestring.hex()
     hexes = [hexstring[i:i+2] for i in range(0, len(hexstring), 2)]
-    mapped = map(lambda h: '\\x' + h, hexes)
+    mapped = map(lambda h: '\\\\x' + h, hexes)
     return ''.join(list(mapped))
 
 

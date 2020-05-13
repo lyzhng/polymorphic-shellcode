@@ -10,15 +10,19 @@ from typing import Dict, List
 import argparse
 
 
-from crypto.encryption.encryptor import encrypt_sc
+from encrypt import encrypt
+from crypto.encryption.encryptor import shellcodify
 from sub_engine.engine import SubEngine
+from substitution.substitution_transpiler import asm_to_shellcode
 from utils import RegexSwitch
 
 
 _ENCRYPTED_SC_TARGET_REGEX = re.compile(r'{{ ENCRYPTED_SC }}')
-_IV_TARGET_REGEX = re.compile(r'{{ IV }}')
+_NUM_CHUNKS_TARGET_REGEX = re.compile(r'{{ NUM_CHUNKS }}')
 _KEY_TARGET_REGEX = re.compile(r'{{ KEY }}')
 _TEMPLATE_TARGET_REGEX = re.compile(r'[\t ]*{{ ([\w\d_]+) }}[\t ]*')
+
+_COMMENT_REGEX = re.compile(r'; .+')
 
 
 hex_to_ascii_mapping: Dict[int, str] = {
@@ -27,7 +31,7 @@ hex_to_ascii_mapping: Dict[int, str] = {
     0xa: '\\n',
     0xc: '\\f',
     0xd: '\\r', 
-    0x22: '\"',
+    0x22: '\\"',
     0x5c: '\\\\',
 }
 
@@ -39,52 +43,29 @@ def to_hexstring(sc: str) -> str:
     return ''.join([sc[i+2:i+4] for i in range(0, len(sc), 4)])
 
 
-def hex_bytes_to_asm_string(hex_values: bytes) -> str:
-    """
-    Convert a byte string containing hex values to a string encoded
-    in a manner understood by as (the assembler).
-    """
-    result: str = ''
-
-    for hex in hex_values:
-        if hex in hex_to_ascii_mapping:
-            result += hex_to_ascii_mapping[hex]
-        elif 32 <= hex <= 122:
-            result += chr(hex)
-        else:
-            result += f'\\{oct(hex)[2:]:0>3}'
-    
-    return result
-    
-
 def morph(shellcode: str):
     """
     Change the given shellcode so that it looks different, but still
     exhibit the same behavior.
     """
     sub_engine = SubEngine()
-    shellcode_bytes: bytes = bytes.fromhex(to_hexstring(shellcode))
-    key, iv, encrypted_sc = encrypt_sc(shellcode_bytes)
+    shellcode_bytes: bytes = to_hexstring(shellcode)
+    key, encrypted_sc = encrypt(shellcode_bytes)
+    
 
     final_program: str = ''
     with open('template.s') as template:
         for line in template:
             with RegexSwitch(line.strip()) as case:
-                if case(_ENCRYPTED_SC_TARGET_REGEX):
-                    sc_str: str = hex_bytes_to_asm_string(encrypted_sc)
-                    final_program += f'        .string "{sc_str}"\n'
-                elif case(_IV_TARGET_REGEX):
-                    iv_str: str = hex_bytes_to_asm_string(iv)
-                    final_program += f'        .ascii  "{iv_str}"\n'
+                if case(_COMMENT_REGEX):
+                    continue
+                elif case(_ENCRYPTED_SC_TARGET_REGEX):
+                    for chunk in encrypted_sc:
+                        final_program += f'    .string "{chunk}"\n'
+                elif case(_NUM_CHUNKS_TARGET_REGEX):
+                    final_program += f'    .long   {len(encrypted_sc)}\n'
                 elif case(_KEY_TARGET_REGEX):
-                    key_str: str = hex_bytes_to_asm_string(key)
-                    key_part_one: str = key_str[:62]
-                    key_part_two: str = key_str[62:]
-                    if key_part_one.endswith('\\') and not key_part_one.endswith('\\\\'):
-                        key_part_one = key_part_one[:-1]
-                        key_part_two = f'\\{key_part_two}'
-                    final_program += f'        .ascii "{key_part_one}"\n'
-                    final_program += f'        .ascii "{key_part_two}"\n'
+                    final_program += f'    .string "{key}"\n'
                 elif case(_TEMPLATE_TARGET_REGEX):
                     match = _TEMPLATE_TARGET_REGEX.fullmatch(line.strip())
                     template_filename: str = f'templates/{match.group(1)}.template'
@@ -120,6 +101,6 @@ if __name__ == '__main__':
             shellcode: str = read_file(args.filename)
         if args.stdin:
             shellcode: str = args.stdin        
-        print(morph(shellcode))
+        print(shellcodify(asm_to_shellcode(morph(shellcode))))
     else:
         parser.print_help()
