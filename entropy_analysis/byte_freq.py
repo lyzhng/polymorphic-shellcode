@@ -4,6 +4,8 @@ import matplotlib.pyplot as plot
 
 
 freq = {}
+_ITERATIONS = 20
+
 
 def run_process():
     os.system(r'python3 main.py -f example.sc > .temp && tail -n +2 .temp > output.sc && rm .temp')
@@ -29,7 +31,7 @@ def plot_graph():
 def main():
     owd = os.getcwd()
     os.chdir('..')
-    for i in range(1024):
+    for i in range(_ITERATIONS):
         print('Iteration', i)
         run_process()
         builder = read_file('output.sc')

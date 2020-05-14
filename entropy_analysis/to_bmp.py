@@ -1,9 +1,9 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image
-from random import randrange
 
+
+_ITERATIONS = 10
 matrix = []
 
 
@@ -26,20 +26,19 @@ def read_file(filename):
 
 def display_image():
     im = np.array(matrix)
-    # im = np.matrix(matrix)
     plt.imshow(im, cmap='gray')
-    # plt.axis('off')
+    plt.axis('off')
     plt.savefig('pict.png', bbox_inches='tight', pad_inches = 0)
-    # plt.gca().set_axis_off()
-    # plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
-    # plt.margins(0,0)
+    plt.gca().set_axis_off()
+    plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+    plt.margins(0,0)
     plt.show()
 
 
 def main():
     owd = os.getcwd()
     os.chdir('..')
-    for i in range(50):
+    for i in range(_ITERATIONS):
         print('Iteration', i)
         run_process()
         hexes = read_file('output.sc')
