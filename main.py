@@ -78,9 +78,9 @@ def args_exist() -> bool:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='?')
-    parser.add_argument('-f', '--filename', help='?')
-    parser.add_argument('-s', '--stdin', help='?')
-    parser.add_argument('-d', '--debug', help='?', required=False, action='store_true')
+    parser.add_argument('-f', '--filename', help="Reads in a filename with a hexstring inside, encrypts it, and writes the .asm template with the original's substitutions")
+    parser.add_argument('-s', '--stdin', help="Reads in a hexstring from stdin, encrypts it, and writes the .asm template with the original's substitutions")
+    parser.add_argument('-d', '--debug', help='Print debug statements to stdout', required=False, action='store_true')
     args = parser.parse_args()
     if args.filename:
         shellcode: str = read_file(args.filename)
