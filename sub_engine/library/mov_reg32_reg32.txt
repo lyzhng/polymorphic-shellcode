@@ -1,16 +1,14 @@
 $REG32_1 $REG32_2
-push $REG32_2
-pop $REG32_1
+inc $REG32_1
+mov $REG32_1, $REG32_2
 ----------
 $REG32_1 $REG32_2
-push eax
-inc eax
-pop eax
-push $REG32_2
-pop $REG32_1
+xor $REG32_1, $REG32_1
+and $REG32_1, $REG32_1
+mov $REG32_1, $REG32_2
 ----------
 $REG32_1 $REG32_2
-inc ebx
-dec ebx
-push $REG32_2
-pop $REG32_1
+inc $REG32_1
+xor $REG32_1, $REG32_1
+dec $REG32_1
+mov $REG32_1, $REG32_2

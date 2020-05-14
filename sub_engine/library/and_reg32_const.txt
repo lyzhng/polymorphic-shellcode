@@ -1,28 +1,20 @@
 $REG32 $CONST
-push eax
-mov eax, $REG32
-and eax, $CONST
-push eax
-mov eax, [esp+4]
-pop $REG32
-add esp, 4
+and $REG32, $CONST
+inc $REG32
+dec $REG32
+inc $REG32
+dec $REG32
+inc $REG32
+dec $REG32
 ----------
 $REG32 $CONST
-push ebx
-push $REG32
-pop ebx
-and ebx, $CONST
-push ebx
-mov ebx, [esp+4]
-pop $REG32
-sub esp, -4
+neg $REG32
+neg $REG32
+and $REG32, $CONST
 ----------
 $REG32 $CONST
-push ecx
-push $REG32
-pop ecx
-and ecx, $CONST
-push ecx
-mov ecx, [esp+4]
-pop $REG32
-add esp, 4
+inc $REG32
+neg $REG32
+inc $REG32
+neg $REG32
+and $REG32, $CONST

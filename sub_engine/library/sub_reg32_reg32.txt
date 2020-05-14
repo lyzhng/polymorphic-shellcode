@@ -1,0 +1,15 @@
+$REG32_1 $REG32_2
+inc $REG32_2
+sub $REG32_1, $REG32_2
+inc $REG32_1
+dec $REG32_2
+----------
+$REG32_1 $REG32_2
+inc $REG32_2
+dec $REG32_2
+sub $REG32_1, $REG32_2
+----------
+$REG32_1 $REG32_2
+inc $REG32_1
+dec $REG32_1
+sub $REG32_1, $REG32_2
