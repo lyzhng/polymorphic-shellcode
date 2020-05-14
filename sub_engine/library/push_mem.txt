@@ -5,15 +5,13 @@ pop eax
 push $MEM
 ----------
 $MEM
-push eax
-xor eax, eax
-add esp, eax
-pop eax
+push ebx
+sub ebx, ebx
+pop ebx
 push $MEM
 ----------
 $MEM
-push eax
-and eax, 1
-xor eax, eax
-pop eax
+push ecx
+neg ecx
+pop ecx
 push $MEM
