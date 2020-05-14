@@ -1,0 +1,14 @@
+$MEM $CONST
+inc eax
+dec eax
+cmp $MEM, $CONST
+----------
+$MEM $CONST
+neg ebx
+neg ebx
+cmp $MEM, $CONST
+----------
+$MEM $CONST
+dec edx
+inc edx
+cmp $MEM, $CONST

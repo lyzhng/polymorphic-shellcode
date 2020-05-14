@@ -1,15 +1,13 @@
 $REG32 $MEM
+dec $REG32
+inc $REG32
+mov $REG32, $MEM
+----------
+$REG32 $MEM
+inc $REG32
+dec $REG32
+mov $REG32, $MEM
+----------
+$REG32 $MEM
 push $MEM
 pop $REG32
-----------
-$REG32 $MEM
-push eax
-xor eax, eax
-pop eax
-mov $REG32, $MEM
-----------
-$REG32 $MEM
-push eax
-inc eax
-pop eax
-mov $REG32, $MEM

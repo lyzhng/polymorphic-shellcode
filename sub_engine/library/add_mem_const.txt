@@ -1,7 +1,6 @@
 $MEM $CONST
-push eax
-xor eax, eax
-pop eax
+dec eax
+inc eax
 add $MEM, $CONST
 ----------
 $MEM $CONST
@@ -10,7 +9,7 @@ dec ebx
 add $MEM, $CONST
 ----------
 $MEM $CONST
-push ecx
-sub ecx, ecx
-pop ecx
+dec ecx
+dec ecx
+add ecx, 2
 add $MEM, $CONST

@@ -1,0 +1,13 @@
+$REG32 $CONST
+dec $REG32
+inc $REG32
+mov $REG32, $CONST
+----------
+$REG32 $CONST
+inc $REG32
+dec $REG32
+mov $REG32, $CONST
+----------
+$REG32 $CONST
+push $CONST
+pop $REG32
