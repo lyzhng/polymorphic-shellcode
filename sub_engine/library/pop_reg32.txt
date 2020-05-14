@@ -1,0 +1,14 @@
+$REG32
+mov $REG32, [esp]
+add esp, 4
+----------
+$REG32
+mov $REG32, [esp]
+sub esp, -4
+----------
+$REG32
+mov $REG32, [esp]
+inc esp
+inc esp
+inc esp
+inc esp

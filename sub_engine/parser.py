@@ -15,7 +15,8 @@ from .utils import RegexSwitch, Switch
 
 _CONST = re.compile(r'0x[0-9a-zA-Z]+')
 _MEM = re.compile(r'((BYTE|WORD|DWORD|QWORD) PTR )?(([CDEFGS]S:((\[.+\])|(0x[a-fA-F0-9]+)))|(\[.+\]))', re.IGNORECASE) #pylint: disable=line-too-long
-_REG = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|eip|ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl|si|di|sp|bp|ip') #pylint: disable=line-too-long
+_REG32 = re.compile(r'eax|ebx|ecx|edx|esi|edi|esp|ebp|eip')
+_REG16 = re.compile(r'ax|bx|cx|dx|ah|al|bh|bl|ch|cl|dh|dl|si|di|sp|bp|ip')
 
 _PREPROCESS_DEFINE = re.compile(r'#define_operand_type (.+)')
 _PREPROCESS_COMMENT = re.compile(r'[ \t]*; .+')
@@ -87,8 +88,10 @@ def preprocess(template_filename: str) -> Tuple[Dict[str, Operand], List[str]]:
                             operand_to_type_mapping[operand] = Operand.CONST
                         elif case('MEM'):
                             operand_to_type_mapping[operand] = Operand.MEM
-                        elif case('REG'):
-                            operand_to_type_mapping[operand] = Operand.REG
+                        elif case('REG32'):
+                            operand_to_type_mapping[operand] = Operand.REG32
+                        elif case('REG16'):
+                            operand_to_type_mapping[operand] = Operand.REG16
                         else:
                             raise TypeError(f'{operand_type} is not supported by the parser.')
                 elif case(_PREPROCESS_COMMENT):
@@ -130,8 +133,11 @@ def parse(operand_to_type_mapping: Dict[str, Operand], code: List[str]) -> List[
                     elif case(_MEM):
                         operand_node = OperandNode(Operand.MEM, operand)
                         annotation.add_operand(operand_node)
-                    elif case(_REG):
-                        operand_node = OperandNode(Operand.REG, operand)
+                    elif case(_REG16):
+                        operand_node = OperandNode(Operand.REG16, operand)
+                        annotation.add_operand(operand_node)
+                    elif case(_REG32):
+                        operand_node = OperandNode(Operand.REG32, operand)
                         annotation.add_operand(operand_node)
                     else:
                         raise TypeError(f'{operand} is not of a type supported by the parser')

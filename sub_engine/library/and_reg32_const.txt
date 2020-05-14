@@ -1,0 +1,28 @@
+$REG32 $CONST
+push eax
+mov eax, $REG32
+and eax, $CONST
+push eax
+mov eax, [esp+4]
+pop $REG32
+add esp, 4
+----------
+$REG32 $CONST
+push ebx
+push $REG32
+pop ebx
+and ebx, $CONST
+push ebx
+mov ebx, [esp+4]
+pop $REG32
+sub esp, -4
+----------
+$REG32 $CONST
+push ecx
+push $REG32
+pop ecx
+and ecx, $CONST
+push ecx
+mov ecx, [esp+4]
+pop $REG32
+add esp, 4

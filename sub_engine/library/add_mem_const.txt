@@ -1,18 +1,16 @@
 $MEM $CONST
 push eax
-push $CONST
-pop eax
-add $MEM, eax
-pop eax
-----------
-$MEM $CONST
-push eax
-mov eax, $CONST
-add $MEM, eax
-pop eax
-----------
-$MEM $CONST
-push eax
-add $MEM, $CONST
 xor eax, eax
 pop eax
+add $MEM, $CONST
+----------
+$MEM $CONST
+inc ebx
+dec ebx
+add $MEM, $CONST
+----------
+$MEM $CONST
+push ecx
+sub ecx, ecx
+pop ecx
+add $MEM, $CONST

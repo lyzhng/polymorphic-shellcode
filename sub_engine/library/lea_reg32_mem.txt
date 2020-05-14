@@ -1,0 +1,27 @@
+$REG32 $MEM
+push eax
+push ebx
+lea ebx, $MEM
+mov $REG32, ebx
+push $REG32
+mov ebx, [esp+4]
+mov eax, [esp+8]
+pop $REG32
+add esp, 8
+----------
+$REG32 $MEM
+push ecx
+lea ecx, $MEM
+mov $REG32, ecx
+push $REG32
+mov ecx, [esp+4]
+pop $REG32
+add esp, 4
+----------
+$REG32 $MEM
+push edx
+lea edx, $MEM
+push edx
+mov edx, [esp+4]
+pop $REG32
+sub esp, -4
