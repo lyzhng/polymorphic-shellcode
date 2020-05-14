@@ -2,7 +2,6 @@
 
 #define_operand_type 4[esp] = MEM
 #define_operand_type DWORD PTR -4[ecx] = MEM
-#define_operand_type DWORD PTR gs:20 = MEM
 #define_operand_type DWORD PTR -28[ebp] = MEM
 
 #define_operand_type -16 = CONST
@@ -21,8 +20,6 @@
     push ecx
     sub esp, 56
     
-    mov eax, DWORD PTR gs:20
-    mov DWORD PTR -28[ebp], eax
     xor eax, eax
     mov eax, esp
     mov edi, eax

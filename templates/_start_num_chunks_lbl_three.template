@@ -3,7 +3,6 @@
 #define_operand_type DWORD PTR -52[ebp] = MEM
 #define_operand_type DWORD PTR -48[ebp] = MEM
 #define_operand_type DWORD PTR -28[ebp] = MEM
-#define_operand_type DWORD PTR gs:20 = MEM
 
 #define_operand_type 0 = CONST
 
@@ -19,6 +18,3 @@
     call eax
     xor eax, eax
     mov esp, edi
-    mov esi, DWORD PTR -28[ebp]
-    xor esi, DWORD PTR gs:20
-    je L69
