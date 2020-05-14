@@ -92,15 +92,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate a C program by reading in a template and filling in the shellcode. After generating, the program gets compiled and is executed.')
     parser.add_argument('-x', '--execute', help='Generate a C program that executes shellcode')
     parser.add_argument('-p', '--plaintext', help='Encrypt plaintext shellcode, encrypt within this file, and then decrypt with a generated C program')
-    parser.add_argument('-f', '--file', help='Read from a file, encrypt within this file, and then decrypt within template', required=False, action='store_true')
+    parser.add_argument('-f', '--filename', help='Read from a file, encrypt within this file, and then decrypt within template', required=False, action='store_true')
     args = parser.parse_args()
     if args_exist():
         if args.plaintext:
             key, iv, encrypted_sc = encryptor.encrypt_sc(bytes.fromhex(args.plaintext))
             builder: str = fill_template(encrypted_sc)
-        if args.execute and not args.file:
+        if args.execute and not args.filename:
             builder: str = fill_template(args.execute)
-        if args.execute and args.file:
+        if args.execute and args.filename:
             builder: str = read_file(args.execute)
             builder: str = fill_template(builder)
         write_file(builder)
