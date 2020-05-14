@@ -80,13 +80,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='?')
     parser.add_argument('-f', '--filename', help='?')
     parser.add_argument('-s', '--stdin', help='?')
-    parser.add_argument('-d', '--debug', help='?')
+    parser.add_argument('-d', '--debug', help='?', required=False, action='store_true')
     args = parser.parse_args()
-    if args_exist():
-        if args.filename:
-            shellcode: str = read_file(args.filename)
-        if args.stdin:
-            shellcode: str = args.stdin        
+    if args.filename:
+        shellcode: str = read_file(args.filename)
+        print(shellcodify(asm_to_shellcode(morph(shellcode, debug=args.debug))))
+    elif args.stdin:
+        shellcode: str = args.stdin        
         print(shellcodify(asm_to_shellcode(morph(shellcode, debug=args.debug))))
     else:
         parser.print_help()
